@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>脉络 Mailuo · 初中数学知识图谱</title>
+    <title>脉络 Mailuo · 中小学数学知识图谱</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Ccircle cx='10' cy='11' r='3.4' fill='white'/%3E%3Ccircle cx='22' cy='21' r='3.4' fill='white'/%3E%3Cpath d='M10 11 L22 21' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
     <style>
         :root {
@@ -201,12 +201,16 @@
             .title small { display:none; }
             .mastery-wrap { display:none; }
         }
+        .edition-select-wrap { margin-bottom: 4px; }
+        .edition-select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; background: #fff; color: var(--ink); cursor: pointer; }
+        .edition-select:focus { outline: none; border-color: var(--accent); }
+        .mt-stage { margin-bottom: 6px; }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">脉</div>
-        <div class="title">脉络 Mailuo <small>初中数学知识图谱 · Knowledge Graph</small></div>
+        <div class="title">脉络 Mailuo <small>中小学数学知识图谱 · Knowledge Graph</small></div>
         <div class="search-box">
             <span class="ic">🔍</span>
             <input id="search" type="text" placeholder="搜索知识点，例如：二次函数" autocomplete="off">
@@ -237,12 +241,20 @@
 
     <div class="layout">
         <aside class="sidebar desktop-only">
-            <h3>年级阶段</h3>
-            <div class="seg-mini" id="grade-seg">
-                <label><input type="radio" name="grade" value="all" checked>全部</label>
-                <label><input type="radio" name="grade" value="初一">初一</label>
-                <label><input type="radio" name="grade" value="初二">初二</label>
-                <label><input type="radio" name="grade" value="初三">初三</label>
+            <h3>教材版本</h3>
+            <div class="edition-select-wrap">
+                <select id="edition-select" class="edition-select">
+                    <option value="bs">北师大版</option>
+                    <option value="rj">人教版</option>
+                    <option value="hs">华师大版</option>
+                </select>
+            </div>
+            <h3>学段筛选</h3>
+            <div class="seg-mini" id="stage-seg">
+                <label><input type="radio" name="stage" value="all" checked>全部</label>
+                <label><input type="radio" name="stage" value="小学">小学</label>
+                <label><input type="radio" name="stage" value="初中">初中</label>
+                <label><input type="radio" name="stage" value="高中">高中</label>
             </div>
             <h3>知识模块</h3>
             <div id="module-filters"></div>
@@ -271,11 +283,11 @@
         <div class="hero">
             <div class="kicker">AI Knowledge Graph for Mathematics</div>
             <h1>脉络</h1>
-            <p>脉络 Mailuo 把数学知识按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。当前覆盖初一至初三核心内容，未来可平滑扩展到小学、高中与大学。</p>
+            <p>脉络 Mailuo 把数学知识按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。覆盖 <b>小学 → 初中 → 高中</b> 全学段，并支持北师大 / 人教 / 华师大多版本切换。</p>
             <div class="stats">
-                <div class="stat"><b>3</b><span>年级阶段</span></div>
-                <div class="stat"><b>7</b><span>知识模块</span></div>
-                <div class="stat"><b>36</b><span>核心节点</span></div>
+                <div class="stat"><b id="stat-stage">3</b><span>学段覆盖</span></div>
+                <div class="stat"><b id="stat-module">12</b><span>知识模块</span></div>
+                <div class="stat"><b id="stat-node">81</b><span>核心节点</span></div>
             </div>
             <div class="hero-actions">
                 <button class="btn primary" id="home-explore">🚀 开始探索</button>
@@ -317,7 +329,7 @@
             <button class="close-x" data-close>×</button>
             <h2>脉络 Mailuo · 作品集说明</h2>
             <h3>一、项目背景</h3>
-            <p>脉络 Mailuo 是一个把数学知识组织成<b>知识网络</b>的产品原型：节点是知识点，边分「依赖（先学后学）」与「关联（横向联系）」两类。它脱胎于「初中数学知识路径图」——之所以更名，是因为产品早已不止是一张图：它有首页、搜索、筛选、编辑、知识详情与 AI 助教，更像一款教育产品，而非一张流程图。当前覆盖初一至初三，品牌去学段化，未来可平滑扩展到小学、高中与大学。</p>
+            <p>脉络 Mailuo 是一个把数学知识组织成<b>知识网络</b>的产品原型：节点是知识点，边分「依赖（先学后学）」与「关联（横向联系）」两类。它脱胎于「初中数学知识路径图」——之所以更名，是因为产品早已不止是一张图：它有首页、搜索、筛选、编辑、知识详情与 AI 助教，更像一款教育产品，而非一张流程图。当前覆盖<b>小学至高中全学段</b>，并支持<b>北师大 / 人教 / 华师大</b>多教材版本切换，统一品牌 脉络 Mailuo。</p>
             <h3>二、为什么做</h3>
             <p>市面上的「知识图谱」很多只是教材目录的换皮。我想要的，是能回答「要学会二次函数，我得先补哪些？」的工具——即<b>以学习路径为中心</b>，而非以教材章节为中心。</p>
             <h3>三、用户是谁</h3>
@@ -350,11 +362,12 @@
                 <div class="tl"><b>Checkpoint A</b><br><span>数据驱动重构；现代教科风三栏；首页 / 双模式 / 帮助 / 恢复默认。</span></div>
                 <div class="tl"><b>Checkpoint B</b><br><span>搜索路径高亮、年级模块筛选、导入导出、AI 演示入口。</span></div>
                 <div class="tl"><b>知识网络升级</b><br><span>依赖/关联双类型边 + 几何分支（平行→矩形/菱形→正方形）；力导向布局；Bezier 连线；Hover 发光；掌握状态与完成率；路径推荐 + 发光动画；聊天式 AI；移动端知识树；作品集闭环页。</span></div>
+                <div class="tl"><b>Checkpoint C · 全学段 + 多版本</b><br><span>知识图谱从初中扩展至小学/高中（82 节点、120 连线）；重构成 MASTER 数据集 + resolveDataset，支持北师大/人教/华师大版本切换（年级标签与独有节点差异化）；学段筛选替代年级筛选；详情卡按学段适配「中考/高考」文案。</span></div>
             </div>
             <h3>七、未来规划</h3>
             <ul>
-                <li>多教材版本（北师大 / 人教 / 华师大）数据切换。</li>
-                <li>学段扩展：小学 → 初中 → 高中 → 大学，统一品牌 脉络 Mailuo。</li>
+                <li><b>（已完成）</b>多教材版本数据切换：北师大 / 人教 / 华师大共享同一知识依赖网络，按版本解析年级与独有节点，新增版本无需改动 SVG。</li>
+                <li><b>（已完成）</b>学段扩展：小学 → 初中 → 高中 全学段覆盖；大学阶段规划中。</li>
                 <li>AI 接入真实大模型，支持自然语言答疑与自动出题。</li>
                 <li>学习进度云同步、错题关联到节点、掌握率看板。</li>
                 <li>独立域名（mailuo.app / mailuo.com）+ 自定义品牌，替代 GitHub Pages 子域。</li>
@@ -367,107 +380,1321 @@
     <input type="file" id="file-input" accept="application/json" style="display:none">
 
     <script type="application/json" id="graph-data">
+{
+  "modules": [
     {
-      "modules": [
-        { "id": "number", "name": "数与式", "color": "#6366f1" },
-        { "id": "expression", "name": "代数式与运算", "color": "#0ea5e9" },
-        { "id": "equation", "name": "方程与不等式", "color": "#10b981" },
-        { "id": "function", "name": "函数", "color": "#f59e0b" },
-        { "id": "geometry", "name": "图形与几何", "color": "#ec4899" },
-        { "id": "transform", "name": "图形变换", "color": "#8b5cf6" },
-        { "id": "probstat", "name": "概率与统计", "color": "#64748b" }
-      ],
-      "nodes": [
-        { "id": "rational-numbers", "name": "有理数及其运算", "grade": "初一", "module": "number" },
-        { "id": "real-numbers", "name": "实数", "grade": "初一", "module": "number" },
-        { "id": "integer-add-sub", "name": "整式及其加减", "grade": "初一", "module": "expression" },
-        { "id": "integer-mul-div", "name": "整式的乘除", "grade": "初一", "module": "expression" },
-        { "id": "factorization", "name": "因式分解", "grade": "初二", "module": "expression" },
-        { "id": "fraction", "name": "分式", "grade": "初二", "module": "expression" },
-        { "id": "linear-equation-one", "name": "一元一次方程", "grade": "初一", "module": "equation" },
-        { "id": "linear-system", "name": "二元一次方程组", "grade": "初一", "module": "equation" },
-        { "id": "linear-inequality", "name": "一元一次不等式", "grade": "初一", "module": "equation" },
-        { "id": "fractional-equation", "name": "分式方程", "grade": "初二", "module": "equation" },
-        { "id": "quadratic-equation", "name": "一元二次方程", "grade": "初三", "module": "equation" },
-        { "id": "variable-relation", "name": "变量之间的关系", "grade": "初二", "module": "function" },
-        { "id": "linear-function", "name": "一次函数", "grade": "初二", "module": "function" },
-        { "id": "inverse-function", "name": "反比例函数", "grade": "初三", "module": "function" },
-        { "id": "quadratic-function", "name": "二次函数", "grade": "初三", "module": "function" },
-        { "id": "rich-graphics", "name": "丰富的图形世界", "grade": "初一", "module": "geometry" },
-        { "id": "basic-plane-figure", "name": "基本平面图形", "grade": "初一", "module": "geometry" },
-        { "id": "lines-angles", "name": "相交线与平行线", "grade": "初一", "module": "geometry" },
-        { "id": "triangle", "name": "三角形", "grade": "初二", "module": "geometry" },
-        { "id": "position-coordinate", "name": "位置与坐标", "grade": "初二", "module": "geometry" },
-        { "id": "pythagoras", "name": "勾股定理", "grade": "初二", "module": "geometry" },
-        { "id": "parallel-proof", "name": "平行线的证明", "grade": "初二", "module": "geometry" },
-        { "id": "triangle-proof", "name": "三角形的证明", "grade": "初二", "module": "geometry" },
-        { "id": "parallelogram", "name": "平行四边形", "grade": "初三", "module": "geometry" },
-        { "id": "rectangle", "name": "矩形", "grade": "初三", "module": "geometry" },
-        { "id": "rhombus", "name": "菱形", "grade": "初三", "module": "geometry" },
-        { "id": "square", "name": "正方形", "grade": "初三", "module": "geometry" },
-        { "id": "projection-view", "name": "投影与视图", "grade": "初三", "module": "geometry" },
-        { "id": "right-triangle-trig", "name": "直角三角形的边角关系", "grade": "初三", "module": "geometry" },
-        { "id": "circle", "name": "圆", "grade": "初三", "module": "geometry" },
-        { "id": "axis-symmetry", "name": "生活中的轴对称", "grade": "初二", "module": "transform" },
-        { "id": "translation-rotation", "name": "图形的平移与旋转", "grade": "初二", "module": "transform" },
-        { "id": "similarity", "name": "图形的相似", "grade": "初三", "module": "transform" },
-        { "id": "data-collection", "name": "数据的收集与整理", "grade": "初一", "module": "probstat" },
-        { "id": "data-analysis", "name": "数据的分析", "grade": "初二", "module": "probstat" },
-        { "id": "probability-advanced", "name": "概率的进一步认识", "grade": "初三", "module": "probstat" }
-      ],
-      "connections": [
-        { "from": "rational-numbers", "to": "real-numbers", "kind": "prereq" },
-        { "from": "rational-numbers", "to": "integer-add-sub", "kind": "prereq" },
-        { "from": "integer-add-sub", "to": "integer-mul-div", "kind": "prereq" },
-        { "from": "integer-mul-div", "to": "factorization", "kind": "prereq" },
-        { "from": "factorization", "to": "fraction", "kind": "prereq" },
-        { "from": "integer-add-sub", "to": "linear-equation-one", "kind": "prereq" },
-        { "from": "linear-equation-one", "to": "linear-system", "kind": "prereq" },
-        { "from": "linear-equation-one", "to": "linear-inequality", "kind": "prereq" },
-        { "from": "factorization", "to": "quadratic-equation", "kind": "prereq" },
-        { "from": "linear-equation-one", "to": "quadratic-equation", "kind": "prereq" },
-        { "from": "fraction", "to": "fractional-equation", "kind": "prereq" },
-        { "from": "integer-add-sub", "to": "variable-relation", "kind": "prereq" },
-        { "from": "variable-relation", "to": "linear-function", "kind": "prereq" },
-        { "from": "linear-function", "to": "inverse-function", "kind": "prereq" },
-        { "from": "linear-function", "to": "quadratic-function", "kind": "prereq" },
-        { "from": "integer-add-sub", "to": "rich-graphics", "kind": "prereq" },
-        { "from": "rich-graphics", "to": "basic-plane-figure", "kind": "prereq" },
-        { "from": "basic-plane-figure", "to": "lines-angles", "kind": "prereq" },
-        { "from": "lines-angles", "to": "parallel-proof", "kind": "prereq" },
-        { "from": "basic-plane-figure", "to": "triangle", "kind": "prereq" },
-        { "from": "triangle", "to": "triangle-proof", "kind": "prereq" },
-        { "from": "triangle-proof", "to": "parallelogram", "kind": "prereq" },
-        { "from": "parallelogram", "to": "rectangle", "kind": "prereq" },
-        { "from": "parallelogram", "to": "rhombus", "kind": "prereq" },
-        { "from": "rectangle", "to": "square", "kind": "prereq" },
-        { "from": "rhombus", "to": "square", "kind": "prereq" },
-        { "from": "triangle", "to": "pythagoras", "kind": "prereq" },
-        { "from": "pythagoras", "to": "right-triangle-trig", "kind": "prereq" },
-        { "from": "triangle-proof", "to": "circle", "kind": "prereq" },
-        { "from": "translation-rotation", "to": "similarity", "kind": "prereq" },
-        { "from": "similarity", "to": "right-triangle-trig", "kind": "prereq" },
-        { "from": "basic-plane-figure", "to": "translation-rotation", "kind": "prereq" },
-        { "from": "translation-rotation", "to": "axis-symmetry", "kind": "prereq" },
-        { "from": "basic-plane-figure", "to": "position-coordinate", "kind": "prereq" },
-        { "from": "position-coordinate", "to": "pythagoras", "kind": "prereq" },
-        { "from": "rich-graphics", "to": "projection-view", "kind": "prereq" },
-        { "from": "data-collection", "to": "data-analysis", "kind": "prereq" },
-        { "from": "data-analysis", "to": "probability-advanced", "kind": "prereq" },
-
-        { "from": "rectangle", "to": "rhombus", "kind": "related" },
-        { "from": "triangle", "to": "similarity", "kind": "related" },
-        { "from": "circle", "to": "triangle", "kind": "related" },
-        { "from": "circle", "to": "pythagoras", "kind": "related" },
-        { "from": "quadratic-function", "to": "quadratic-equation", "kind": "related" },
-        { "from": "linear-function", "to": "linear-equation-one", "kind": "related" },
-        { "from": "position-coordinate", "to": "linear-function", "kind": "related" },
-        { "from": "similarity", "to": "right-triangle-trig", "kind": "related" },
-        { "from": "parallelogram", "to": "similarity", "kind": "related" },
-        { "from": "inverse-function", "to": "quadratic-function", "kind": "related" },
-        { "from": "square", "to": "circle", "kind": "related" }
-      ]
+      "id": "number",
+      "name": "数与式",
+      "color": "#6366f1"
+    },
+    {
+      "id": "expression",
+      "name": "代数式与运算",
+      "color": "#0ea5e9"
+    },
+    {
+      "id": "equation",
+      "name": "方程与不等式",
+      "color": "#10b981"
+    },
+    {
+      "id": "function",
+      "name": "函数",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "geometry",
+      "name": "图形与几何",
+      "color": "#ec4899"
+    },
+    {
+      "id": "transform",
+      "name": "图形变换",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "probstat",
+      "name": "概率与统计",
+      "color": "#64748b"
+    },
+    {
+      "id": "set-logic",
+      "name": "集合与逻辑",
+      "color": "#14b8a6"
+    },
+    {
+      "id": "vector",
+      "name": "向量与复数",
+      "color": "#d946ef"
+    },
+    {
+      "id": "calculus",
+      "name": "导数与微积分",
+      "color": "#ef4444"
+    },
+    {
+      "id": "solid",
+      "name": "立体几何",
+      "color": "#0891b2"
+    },
+    {
+      "id": "analytic",
+      "name": "解析几何",
+      "color": "#ca8a04"
     }
+  ],
+  "editions": [
+    {
+      "id": "bs",
+      "name": "北师大版"
+    },
+    {
+      "id": "rj",
+      "name": "人教版"
+    },
+    {
+      "id": "hs",
+      "name": "华师大版"
+    }
+  ],
+  "topics": [
+    {
+      "id": "prim-num",
+      "name": "整数与四则运算",
+      "module": "number",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-fraction",
+      "name": "分数与小数",
+      "module": "number",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-measure",
+      "name": "量与计量",
+      "module": "number",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-equation",
+      "name": "简易方程",
+      "module": "equation",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-figure",
+      "name": "图形的认识",
+      "module": "geometry",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-perimeter",
+      "name": "周长与面积",
+      "module": "geometry",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-symmetry",
+      "name": "轴对称与平移",
+      "module": "transform",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-data",
+      "name": "简单数据统计",
+      "module": "probstat",
+      "grade": "小学"
+    },
+    {
+      "id": "prim-logic",
+      "name": "找规律与推理",
+      "module": "set-logic",
+      "grade": "小学"
+    },
+    {
+      "id": "rational-numbers",
+      "name": "有理数及其运算",
+      "module": "number",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一上",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "real-numbers",
+      "name": "实数",
+      "module": "number",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "integer-add-sub",
+      "name": "整式及其加减",
+      "module": "expression",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一上",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "integer-mul-div",
+      "name": "整式的乘除",
+      "module": "expression",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "factorization",
+      "name": "因式分解",
+      "module": "expression",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "fraction",
+      "name": "分式",
+      "module": "expression",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "linear-equation-one",
+      "name": "一元一次方程",
+      "module": "equation",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一上",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "linear-system",
+      "name": "二元一次方程组",
+      "module": "equation",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "linear-inequality",
+      "name": "一元一次不等式",
+      "module": "equation",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "fractional-equation",
+      "name": "分式方程",
+      "module": "equation",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "quadratic-equation",
+      "name": "一元二次方程",
+      "module": "equation",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三上",
+        "hs": "初三上"
+      }
+    },
+    {
+      "id": "variable-relation",
+      "name": "变量之间的关系",
+      "module": "function",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二",
+        "hs": "初二"
+      }
+    },
+    {
+      "id": "linear-function",
+      "name": "一次函数",
+      "module": "function",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "inverse-function",
+      "name": "反比例函数",
+      "module": "function",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三下",
+        "hs": "初三下"
+      }
+    },
+    {
+      "id": "quadratic-function",
+      "name": "二次函数",
+      "module": "function",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三上",
+        "hs": "初三上"
+      }
+    },
+    {
+      "id": "rich-graphics",
+      "name": "丰富的图形世界",
+      "module": "geometry",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一上",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "basic-plane-figure",
+      "name": "基本平面图形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一上",
+        "hs": "初一"
+      }
+    },
+    {
+      "id": "lines-angles",
+      "name": "相交线与平行线",
+      "module": "geometry",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "triangle",
+      "name": "三角形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "position-coordinate",
+      "name": "位置与坐标",
+      "module": "geometry",
+      "grade": {
+        "bs": "初二",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "pythagoras",
+      "name": "勾股定理",
+      "module": "geometry",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "parallel-proof",
+      "name": "平行线的证明",
+      "module": "geometry",
+      "grade": {
+        "bs": "初二",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "triangle-proof",
+      "name": "三角形的证明",
+      "module": "geometry",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "parallelogram",
+      "name": "平行四边形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "rectangle",
+      "name": "矩形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "rhombus",
+      "name": "菱形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "square",
+      "name": "正方形",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "projection-view",
+      "name": "投影与视图",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三下",
+        "hs": "初三下"
+      }
+    },
+    {
+      "id": "right-triangle-trig",
+      "name": "直角三角形的边角关系",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三下",
+        "hs": "初三下"
+      }
+    },
+    {
+      "id": "circle",
+      "name": "圆",
+      "module": "geometry",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三上",
+        "hs": "初三上"
+      }
+    },
+    {
+      "id": "axis-symmetry",
+      "name": "生活中的轴对称",
+      "module": "transform",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二上",
+        "hs": "初二上"
+      }
+    },
+    {
+      "id": "translation-rotation",
+      "name": "图形的平移与旋转",
+      "module": "transform",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "similarity",
+      "name": "图形的相似",
+      "module": "transform",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三下",
+        "hs": "初三下"
+      }
+    },
+    {
+      "id": "data-collection",
+      "name": "数据的收集与整理",
+      "module": "probstat",
+      "grade": {
+        "bs": "初一",
+        "rj": "初一下",
+        "hs": "初一下"
+      }
+    },
+    {
+      "id": "data-analysis",
+      "name": "数据的分析",
+      "module": "probstat",
+      "grade": {
+        "bs": "初二",
+        "rj": "初二",
+        "hs": "初二"
+      }
+    },
+    {
+      "id": "probability-advanced",
+      "name": "概率的进一步认识",
+      "module": "probstat",
+      "grade": {
+        "bs": "初三",
+        "rj": "初三上",
+        "hs": "初三上"
+      }
+    },
+    {
+      "id": "quadratic-radical",
+      "name": "二次根式",
+      "module": "number",
+      "grade": {
+        "rj": "初二下",
+        "hs": "初二下"
+      }
+    },
+    {
+      "id": "set-basic",
+      "name": "集合与元素",
+      "module": "set-logic",
+      "grade": "高一"
+    },
+    {
+      "id": "set-op",
+      "name": "集合的关系与运算",
+      "module": "set-logic",
+      "grade": "高一"
+    },
+    {
+      "id": "logic-prop",
+      "name": "常用逻辑用语",
+      "module": "set-logic",
+      "grade": "高一"
+    },
+    {
+      "id": "func-concept",
+      "name": "函数概念与基本性质",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "func-monotonic",
+      "name": "函数的单调性与奇偶性",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "exp-func",
+      "name": "指数函数",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "log-func",
+      "name": "对数函数",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "power-func",
+      "name": "幂函数",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "func-app",
+      "name": "函数模型与应用",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "seq-arith",
+      "name": "数列（等差与等比）",
+      "module": "number",
+      "grade": "高一"
+    },
+    {
+      "id": "seq-sum",
+      "name": "数列求和",
+      "module": "number",
+      "grade": "高一"
+    },
+    {
+      "id": "ineq-basic",
+      "name": "不等式性质与解法",
+      "module": "equation",
+      "grade": "高一"
+    },
+    {
+      "id": "ineq-linear",
+      "name": "二元一次不等式与线性规划",
+      "module": "equation",
+      "grade": "高一"
+    },
+    {
+      "id": "trig-angle",
+      "name": "任意角与弧度制",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "trig-func",
+      "name": "三角函数定义与图象",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "trig-ident",
+      "name": "三角恒等变换",
+      "module": "function",
+      "grade": "高一"
+    },
+    {
+      "id": "vector-plane",
+      "name": "平面向量",
+      "module": "vector",
+      "grade": "高一"
+    },
+    {
+      "id": "complex-num",
+      "name": "复数",
+      "module": "vector",
+      "grade": "高一"
+    },
+    {
+      "id": "solid-basic",
+      "name": "空间几何体",
+      "module": "solid",
+      "grade": "高一"
+    },
+    {
+      "id": "solid-point",
+      "name": "点线面位置关系",
+      "module": "solid",
+      "grade": "高一"
+    },
+    {
+      "id": "solid-parallel",
+      "name": "平行与垂直",
+      "module": "solid",
+      "grade": "高一"
+    },
+    {
+      "id": "solid-angle",
+      "name": "空间角与距离",
+      "module": "solid",
+      "grade": "高二"
+    },
+    {
+      "id": "analytic-line",
+      "name": "直线与方程",
+      "module": "analytic",
+      "grade": "高一"
+    },
+    {
+      "id": "analytic-circle",
+      "name": "圆与方程",
+      "module": "analytic",
+      "grade": "高一"
+    },
+    {
+      "id": "analytic-ellipse",
+      "name": "椭圆",
+      "module": "analytic",
+      "grade": "高二"
+    },
+    {
+      "id": "analytic-hyper",
+      "name": "双曲线",
+      "module": "analytic",
+      "grade": "高二"
+    },
+    {
+      "id": "analytic-parab",
+      "name": "抛物线",
+      "module": "analytic",
+      "grade": "高二"
+    },
+    {
+      "id": "deriv-basic",
+      "name": "导数概念与运算",
+      "module": "calculus",
+      "grade": "高二"
+    },
+    {
+      "id": "deriv-app",
+      "name": "导数应用（单调与极值）",
+      "module": "calculus",
+      "grade": "高二"
+    },
+    {
+      "id": "counting",
+      "name": "计数原理",
+      "module": "probstat",
+      "grade": "高二"
+    },
+    {
+      "id": "perm-comb",
+      "name": "排列与组合",
+      "module": "probstat",
+      "grade": "高二"
+    },
+    {
+      "id": "binom",
+      "name": "二项式定理",
+      "module": "probstat",
+      "grade": "高二"
+    },
+    {
+      "id": "prob-dist",
+      "name": "随机变量及其分布",
+      "module": "probstat",
+      "grade": "高二"
+    },
+    {
+      "id": "prob-exp",
+      "name": "期望与方差",
+      "module": "probstat",
+      "grade": "高二"
+    },
+    {
+      "id": "stat-inf",
+      "name": "统计与线性回归",
+      "module": "probstat",
+      "grade": "高二"
+    }
+  ],
+  "connections": [
+    {
+      "from": "rational-numbers",
+      "to": "real-numbers",
+      "kind": "prereq"
+    },
+    {
+      "from": "rational-numbers",
+      "to": "integer-add-sub",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-add-sub",
+      "to": "integer-mul-div",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-mul-div",
+      "to": "factorization",
+      "kind": "prereq"
+    },
+    {
+      "from": "factorization",
+      "to": "fraction",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-add-sub",
+      "to": "linear-equation-one",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-equation-one",
+      "to": "linear-system",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-equation-one",
+      "to": "linear-inequality",
+      "kind": "prereq"
+    },
+    {
+      "from": "factorization",
+      "to": "quadratic-equation",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-equation-one",
+      "to": "quadratic-equation",
+      "kind": "prereq"
+    },
+    {
+      "from": "fraction",
+      "to": "fractional-equation",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-add-sub",
+      "to": "variable-relation",
+      "kind": "prereq"
+    },
+    {
+      "from": "variable-relation",
+      "to": "linear-function",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-function",
+      "to": "inverse-function",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-function",
+      "to": "quadratic-function",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-add-sub",
+      "to": "rich-graphics",
+      "kind": "prereq"
+    },
+    {
+      "from": "rich-graphics",
+      "to": "basic-plane-figure",
+      "kind": "prereq"
+    },
+    {
+      "from": "basic-plane-figure",
+      "to": "lines-angles",
+      "kind": "prereq"
+    },
+    {
+      "from": "lines-angles",
+      "to": "parallel-proof",
+      "kind": "prereq"
+    },
+    {
+      "from": "basic-plane-figure",
+      "to": "triangle",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle",
+      "to": "triangle-proof",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle-proof",
+      "to": "parallelogram",
+      "kind": "prereq"
+    },
+    {
+      "from": "parallelogram",
+      "to": "rectangle",
+      "kind": "prereq"
+    },
+    {
+      "from": "parallelogram",
+      "to": "rhombus",
+      "kind": "prereq"
+    },
+    {
+      "from": "rectangle",
+      "to": "square",
+      "kind": "prereq"
+    },
+    {
+      "from": "rhombus",
+      "to": "square",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle",
+      "to": "pythagoras",
+      "kind": "prereq"
+    },
+    {
+      "from": "pythagoras",
+      "to": "right-triangle-trig",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle-proof",
+      "to": "circle",
+      "kind": "prereq"
+    },
+    {
+      "from": "translation-rotation",
+      "to": "similarity",
+      "kind": "prereq"
+    },
+    {
+      "from": "similarity",
+      "to": "right-triangle-trig",
+      "kind": "prereq"
+    },
+    {
+      "from": "basic-plane-figure",
+      "to": "translation-rotation",
+      "kind": "prereq"
+    },
+    {
+      "from": "translation-rotation",
+      "to": "axis-symmetry",
+      "kind": "prereq"
+    },
+    {
+      "from": "basic-plane-figure",
+      "to": "position-coordinate",
+      "kind": "prereq"
+    },
+    {
+      "from": "position-coordinate",
+      "to": "pythagoras",
+      "kind": "prereq"
+    },
+    {
+      "from": "rich-graphics",
+      "to": "projection-view",
+      "kind": "prereq"
+    },
+    {
+      "from": "data-collection",
+      "to": "data-analysis",
+      "kind": "prereq"
+    },
+    {
+      "from": "data-analysis",
+      "to": "probability-advanced",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-num",
+      "to": "prim-fraction",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-num",
+      "to": "prim-measure",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-num",
+      "to": "prim-equation",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-figure",
+      "to": "prim-perimeter",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-figure",
+      "to": "prim-symmetry",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-fraction",
+      "to": "rational-numbers",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-equation",
+      "to": "linear-equation-one",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-figure",
+      "to": "basic-plane-figure",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-symmetry",
+      "to": "axis-symmetry",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-data",
+      "to": "data-collection",
+      "kind": "prereq"
+    },
+    {
+      "from": "prim-logic",
+      "to": "logic-prop",
+      "kind": "prereq"
+    },
+    {
+      "from": "real-numbers",
+      "to": "func-concept",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-concept",
+      "to": "func-monotonic",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-concept",
+      "to": "exp-func",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-concept",
+      "to": "log-func",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-concept",
+      "to": "power-func",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-concept",
+      "to": "func-app",
+      "kind": "prereq"
+    },
+    {
+      "from": "func-monotonic",
+      "to": "deriv-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "exp-func",
+      "to": "deriv-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "trig-func",
+      "to": "deriv-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "log-func",
+      "to": "deriv-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "deriv-basic",
+      "to": "deriv-app",
+      "kind": "prereq"
+    },
+    {
+      "from": "real-numbers",
+      "to": "vector-plane",
+      "kind": "prereq"
+    },
+    {
+      "from": "rational-numbers",
+      "to": "seq-arith",
+      "kind": "prereq"
+    },
+    {
+      "from": "integer-add-sub",
+      "to": "seq-arith",
+      "kind": "prereq"
+    },
+    {
+      "from": "seq-arith",
+      "to": "seq-sum",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-equation-one",
+      "to": "ineq-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "quadratic-equation",
+      "to": "ineq-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "ineq-basic",
+      "to": "ineq-linear",
+      "kind": "prereq"
+    },
+    {
+      "from": "right-triangle-trig",
+      "to": "trig-angle",
+      "kind": "prereq"
+    },
+    {
+      "from": "pythagoras",
+      "to": "trig-func",
+      "kind": "prereq"
+    },
+    {
+      "from": "trig-angle",
+      "to": "trig-func",
+      "kind": "prereq"
+    },
+    {
+      "from": "trig-func",
+      "to": "trig-ident",
+      "kind": "prereq"
+    },
+    {
+      "from": "position-coordinate",
+      "to": "vector-plane",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle",
+      "to": "vector-plane",
+      "kind": "prereq"
+    },
+    {
+      "from": "real-numbers",
+      "to": "complex-num",
+      "kind": "prereq"
+    },
+    {
+      "from": "quadratic-equation",
+      "to": "complex-num",
+      "kind": "prereq"
+    },
+    {
+      "from": "basic-plane-figure",
+      "to": "solid-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "triangle",
+      "to": "solid-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "position-coordinate",
+      "to": "solid-point",
+      "kind": "prereq"
+    },
+    {
+      "from": "solid-basic",
+      "to": "solid-parallel",
+      "kind": "prereq"
+    },
+    {
+      "from": "solid-parallel",
+      "to": "solid-angle",
+      "kind": "prereq"
+    },
+    {
+      "from": "position-coordinate",
+      "to": "analytic-line",
+      "kind": "prereq"
+    },
+    {
+      "from": "linear-function",
+      "to": "analytic-line",
+      "kind": "prereq"
+    },
+    {
+      "from": "analytic-line",
+      "to": "analytic-circle",
+      "kind": "prereq"
+    },
+    {
+      "from": "analytic-circle",
+      "to": "analytic-ellipse",
+      "kind": "prereq"
+    },
+    {
+      "from": "analytic-circle",
+      "to": "analytic-hyper",
+      "kind": "prereq"
+    },
+    {
+      "from": "analytic-circle",
+      "to": "analytic-parab",
+      "kind": "prereq"
+    },
+    {
+      "from": "analytic-ellipse",
+      "to": "analytic-hyper",
+      "kind": "prereq"
+    },
+    {
+      "from": "data-collection",
+      "to": "stat-inf",
+      "kind": "prereq"
+    },
+    {
+      "from": "data-analysis",
+      "to": "prob-dist",
+      "kind": "prereq"
+    },
+    {
+      "from": "perm-comb",
+      "to": "prob-dist",
+      "kind": "prereq"
+    },
+    {
+      "from": "counting",
+      "to": "perm-comb",
+      "kind": "prereq"
+    },
+    {
+      "from": "perm-comb",
+      "to": "binom",
+      "kind": "prereq"
+    },
+    {
+      "from": "prob-dist",
+      "to": "prob-exp",
+      "kind": "prereq"
+    },
+    {
+      "from": "prob-exp",
+      "to": "stat-inf",
+      "kind": "prereq"
+    },
+    {
+      "from": "set-basic",
+      "to": "set-op",
+      "kind": "prereq"
+    },
+    {
+      "from": "set-op",
+      "to": "logic-prop",
+      "kind": "prereq"
+    },
+    {
+      "from": "set-basic",
+      "to": "func-concept",
+      "kind": "prereq"
+    },
+    {
+      "from": "logic-prop",
+      "to": "ineq-basic",
+      "kind": "prereq"
+    },
+    {
+      "from": "quadratic-radical",
+      "to": "quadratic-equation",
+      "kind": "prereq"
+    },
+    {
+      "from": "rectangle",
+      "to": "rhombus",
+      "kind": "related"
+    },
+    {
+      "from": "triangle",
+      "to": "similarity",
+      "kind": "related"
+    },
+    {
+      "from": "circle",
+      "to": "triangle",
+      "kind": "related"
+    },
+    {
+      "from": "circle",
+      "to": "pythagoras",
+      "kind": "related"
+    },
+    {
+      "from": "quadratic-function",
+      "to": "quadratic-equation",
+      "kind": "related"
+    },
+    {
+      "from": "linear-function",
+      "to": "linear-equation-one",
+      "kind": "related"
+    },
+    {
+      "from": "position-coordinate",
+      "to": "linear-function",
+      "kind": "related"
+    },
+    {
+      "from": "similarity",
+      "to": "right-triangle-trig",
+      "kind": "related"
+    },
+    {
+      "from": "parallelogram",
+      "to": "similarity",
+      "kind": "related"
+    },
+    {
+      "from": "inverse-function",
+      "to": "quadratic-function",
+      "kind": "related"
+    },
+    {
+      "from": "square",
+      "to": "circle",
+      "kind": "related"
+    },
+    {
+      "from": "quadratic-function",
+      "to": "func-concept",
+      "kind": "related"
+    },
+    {
+      "from": "quadratic-function",
+      "to": "analytic-parab",
+      "kind": "related"
+    },
+    {
+      "from": "circle",
+      "to": "analytic-circle",
+      "kind": "related"
+    },
+    {
+      "from": "pythagoras",
+      "to": "solid-angle",
+      "kind": "related"
+    },
+    {
+      "from": "vector-plane",
+      "to": "solid-point",
+      "kind": "related"
+    },
+    {
+      "from": "trig-func",
+      "to": "right-triangle-trig",
+      "kind": "related"
+    },
+    {
+      "from": "exp-func",
+      "to": "log-func",
+      "kind": "related"
+    },
+    {
+      "from": "linear-function",
+      "to": "func-concept",
+      "kind": "related"
+    },
+    {
+      "from": "prim-logic",
+      "to": "set-basic",
+      "kind": "related"
+    },
+    {
+      "from": "real-numbers",
+      "to": "quadratic-radical",
+      "kind": "related"
+    }
+  ]
+}
     </script>
 
     <script>
@@ -479,26 +1706,40 @@
         const el = (t, a) => { const e = document.createElementNS(SVGNS, t); if (a) for (const k in a) e.setAttribute(k, a[k]); return e; };
         const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-        const rawData = JSON.parse($("#graph-data").textContent);
-        const moduleMap = {}; rawData.modules.forEach(m => moduleMap[m.id] = m);
+        const MASTER = JSON.parse($("#graph-data").textContent);
+        const EDITIONS = MASTER.editions;
+        let rawData = null;
+        let moduleMap = {};
+        let nodeState = {}, connState = {}, nodeById = {}, prereqParents = {}, prereqChildren = {}, relatedOf = {};
+
+        function stageOf(grade) {
+            if (!grade) return null;
+            if (grade === "小学") return "小学";
+            if (grade.indexOf("初") === 0) return "初中";
+            return "高中";
+        }
+        // 把 MASTER 数据集按所选教材版本解析为当前渲染用的 rawData
+        function resolveDataset(edId) {
+            const ed = EDITIONS.find(e => e.id === edId) || EDITIONS[0];
+            const nodes = MASTER.topics
+                .map(t => {
+                    let g = t.grade;
+                    let gg = (typeof g === "string") ? g : (g[edId] != null ? g[edId] : (g[ed.id] != null ? g[ed.id] : g.bs));
+                    return { id: t.id, name: t.name, module: t.module, grade: gg };
+                })
+                .filter(n => n.grade && n.grade !== null);
+            const present = new Set(nodes.map(n => n.id));
+            const connections = MASTER.connections.filter(c => present.has(c.from) && present.has(c.to));
+            rawData = { modules: MASTER.modules, nodes: nodes, connections: connections };
+            moduleMap = {}; rawData.modules.forEach(m => moduleMap[m.id] = m);
+            nodeState = {}; connState = {}; nodeById = {}; prereqParents = {}; prereqChildren = {}; relatedOf = {};
+            rawData.nodes.forEach(n => { nodeState[n.id] = { x: 0, y: 0, w: n.w || 132, h: n.h || 50, dx: 0, dy: 0 }; nodeById[n.id] = n; prereqParents[n.id] = []; prereqChildren[n.id] = []; relatedOf[n.id] = []; });
+            rawData.connections.forEach((c, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; if (c.kind === "prereq") { prereqParents[c.to].push(c.from); prereqChildren[c.from].push(c.to); } else { relatedOf[c.from].push(c.to); relatedOf[c.to].push(c.from); } });
+        }
 
         // ---- state ----
         const STATE_KEY = "cz-knowledge-graph-v3";
-        const state = { mode: "browse", selectedId: null, selectedConn: null, search: "", grade: "all", modules: new Set(rawData.modules.map(m => m.id)), mastery: {} };
-
-        // node/conn mutable state
-        const nodeState = {};
-        const connState = {};
-        rawData.nodes.forEach(n => nodeState[n.id] = { x: 0, y: 0, w: n.w || 132, h: n.h || 50, dx: 0, dy: 0 });
-        rawData.connections.forEach((_, i) => connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 });
-
-        const nodeById = {}; rawData.nodes.forEach(n => nodeById[n.id] = n);
-        const prereqParents = {}; const prereqChildren = {}; const relatedOf = {};
-        rawData.nodes.forEach(n => { prereqParents[n.id] = []; prereqChildren[n.id] = []; relatedOf[n.id] = []; });
-        rawData.connections.forEach(c => {
-            if (c.kind === "prereq") { prereqParents[c.to].push(c.from); prereqChildren[c.from].push(c.to); }
-            else { relatedOf[c.from].push(c.to); relatedOf[c.to].push(c.from); }
-        });
+        const state = { mode: "browse", selectedId: null, selectedConn: null, search: "", stage: "all", edition: "bs", modules: new Set(), mastery: {} };
 
         // ---- node rich metadata (key nodes explicit; others defaulted) ----
         const META = {
@@ -522,9 +1763,11 @@
         function metaOf(id) {
             if (META[id]) return META[id];
             const n = nodeById[id];
-            const base = { "初一": 30, "初二": 42, "初三": 55 }[n.grade] || 40;
-            const f = ({ equation: 5, function: 5, geometry: 5, number: 3, expression: 4, transform: 3, probstat: 3 }[n.module] || 3);
-            return { est: base, freq: f, level: "理解", typical: ["（典型题待补充）"], zhongkao: "（中考数据待补充）" };
+            const stg = stageOf(n.grade);
+            const base = ({ "小学": 22, "初中": 42, "高中": 58 }[stg]) || 40;
+            const f = ({ equation: 5, function: 5, geometry: 5, number: 3, expression: 4, transform: 3, probstat: 3, "set-logic": 3, vector: 4, calculus: 5, solid: 4, analytic: 4 }[n.module] || 3);
+            const exam = stg === "小学" ? "小学基础，重在理解概念与熟练运算，为初中打底。" : stg === "高中" ? "高考核心模块，建议结合真题综合训练。" : undefined;
+            return { est: base, freq: f, level: "理解", typical: ["（典型题待补充）"], zhongkao: stg === "初中" ? "（中考数据待补充）" : undefined, exam: exam };
         }
         const stars = (n) => { let s = ""; for (let i = 1; i <= 5; i++) s += i <= n ? "★" : "<span class='off'>★</span>"; return s; };
 
@@ -764,7 +2007,7 @@
                 <div class="d-section"><h4>后续关联</h4><div class="chips">${nexts}</div></div>
                 <div class="d-section"><h4>横向关联</h4><div class="chips">${rels}</div></div>
                 <div class="d-section"><h4>典型题</h4><ul class="clean">${meta.typical.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>
-                <div class="d-section"><h4>近三年中考</h4><p style="font-size:13.5px;line-height:1.7;color:#374151">${esc(meta.zhongkao)}</p></div>
+                ${(() => { const stg = stageOf(n.grade); const label = stg === "小学" ? "学习建议" : stg === "高中" ? "高考关联" : "近三年中考"; const text = stg === "初中" ? (meta.zhongkao || "（中考数据待补充）") : (meta.exam || (stg === "小学" ? "小学基础，重在理解概念与熟练运算，为初中打底。" : "高考核心模块，建议结合真题综合训练。")); return `<div class="d-section"><h4>${label}</h4><p style="font-size:13.5px;line-height:1.7;color:#374151">${esc(text)}</p></div>`; })()}
                 <div class="d-section"><h4>延伸资源</h4>
                     <div class="chips">
                         <span class="chip">🎬 学习视频</span>
@@ -806,7 +2049,7 @@
             const searchSet = state.search ? ancestorsOf(matchId(state.search)).add(matchId(state.search)) : null;
             rawData.nodes.forEach(n => {
                 const g = nodeEls[n.id]; if (!g) return;
-                let show = state.modules.has(n.module) && (state.grade === "all" || n.grade === state.grade);
+                let show = state.modules.has(n.module) && (state.stage === "all" || stageOf(n.grade) === state.stage);
                 let dim = !show;
                 if (searchSet) dim = !searchSet.has(n.id);
                 else if (!show) dim = true;
@@ -953,7 +2196,8 @@
 
         // ---------- export / import ----------
         function currentData() {
-            return { modules: rawData.modules, nodes: rawData.nodes.map(n => ({ ...n, x: nodeState[n.id].x, y: nodeState[n.id].y, w: nodeState[n.id].w, h: nodeState[n.id].h })), connections: rawData.connections, version: "北师大版", updatedAt: new Date().toISOString().slice(0, 10), mastery: state.mastery };
+            const ed = EDITIONS.find(e => e.id === state.edition);
+            return { modules: rawData.modules, nodes: rawData.nodes.map(n => ({ ...n, x: nodeState[n.id].x, y: nodeState[n.id].y, w: nodeState[n.id].w, h: nodeState[n.id].h })), connections: rawData.connections, version: ed ? ed.name : "北师大版", updatedAt: new Date().toISOString().slice(0, 10), mastery: state.mastery };
         }
         function download(name, content, type) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
         function exportJSON() { download("Mailuo.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
@@ -980,9 +2224,9 @@
         }
         function restoreDefault() {
             localStorage.removeItem(STATE_KEY);
-            const fresh = JSON.parse($("#graph-data").textContent);
-            rawData.nodes.forEach(n => { nodeById[n.id].name = fresh.nodes.find(f => f.id === n.id).name; });
-            rawData.connections.forEach((_, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; });
+            resolveDataset(state.edition);
+            state.modules = new Set(rawData.modules.map(m => m.id));
+            $$('#module-filters input').forEach(c => c.checked = state.modules.has(c.value));
             state.mastery = {}; state.search = ""; $("#search").value = "";
             forceLayout();
             state.selectedId = null; state.selectedConn = null;
@@ -1012,18 +2256,26 @@
         // ---------- mobile tree ----------
         function renderMobileTree() {
             const root = $("#mtree"); if (!root) return;
-            const grades = ["初一", "初二", "初三"];
+            const stages = ["小学", "初中", "高中"];
             let html = "";
-            grades.forEach(g => {
-                const mods = {};
-                rawData.nodes.filter(n => n.grade === g).forEach(n => { (mods[n.module] = mods[n.module] || []).push(n); });
-                let mh = "";
-                Object.keys(mods).forEach(mid => {
-                    mh += `<div class="mt-mod"><div class="mt-h" data-toggle>${moduleMap[mid].name} <span>▾</span></div><div class="mt-hidden">` +
-                        mods[mid].map(n => `<div class="mt-node" data-node="${n.id}" style="border-left-color:${moduleMap[mid].color}">${esc(n.name)}<div class="mt-meta">${g} · ${["未学", "学习中", "已掌握"][state.mastery[n.id] || 0]}</div></div>`).join("") +
-                        `</div></div>`;
+            stages.forEach(stage => {
+                const gradeMap = {};
+                rawData.nodes.filter(n => stageOf(n.grade) === stage).forEach(n => { (gradeMap[n.grade] = gradeMap[n.grade] || []).push(n); });
+                const grades = Object.keys(gradeMap);
+                if (!grades.length) return;
+                let gh = "";
+                grades.forEach(g => {
+                    const mods = {};
+                    gradeMap[g].forEach(n => { (mods[n.module] = mods[n.module] || []).push(n); });
+                    let mh = "";
+                    Object.keys(mods).forEach(mid => {
+                        mh += `<div class="mt-mod"><div class="mt-h" data-toggle>${moduleMap[mid].name} <span>▾</span></div><div class="mt-hidden">` +
+                            mods[mid].map(n => `<div class="mt-node" data-node="${n.id}" style="border-left-color:${moduleMap[mid].color}">${esc(n.name)}<div class="mt-meta">${g} · ${["未学", "学习中", "已掌握"][state.mastery[n.id] || 0]}</div></div>`).join("") +
+                            `</div></div>`;
+                    });
+                    gh += `<div class="mt-grade"><div class="mt-h" data-toggle>${g} <span>▾</span></div><div class="mt-hidden">${mh}</div></div>`;
                 });
-                html += `<div class="mt-grade"><div class="mt-h" data-toggle>${g} 年级 <span>▾</span></div><div class="mt-hidden">${mh}</div></div>`;
+                html += `<div class="mt-stage"><div class="mt-h" data-toggle>${stage} <span>▾</span></div><div class="mt-hidden">${gh}</div></div>`;
             });
             root.innerHTML = html;
             $$("#mtree [data-toggle]").forEach(h => h.addEventListener("click", () => { const t = h.nextElementSibling; t.classList.toggle("mt-hidden"); }));
@@ -1065,12 +2317,28 @@
 
         // ---------- init ----------
         function init() {
-            loadMastery(); loadState(); forceLayout();
+            loadMastery(); resolveDataset(state.edition || "bs"); state.modules = new Set(rawData.modules.map(m => m.id)); loadState(); forceLayout();
+            // 动态学段/模块/节点统计
+            $("#stat-stage").textContent = new Set(rawData.nodes.map(n => stageOf(n.grade))).size;
+            $("#stat-module").textContent = rawData.modules.length;
+            $("#stat-node").textContent = rawData.nodes.length;
             // build module filters
             const wrap = $("#module-filters");
             rawData.modules.forEach(m => { const lbl = document.createElement("label"); lbl.className = "opt"; lbl.innerHTML = `<input type="checkbox" value="${m.id}" checked> <span class="mod-dot" style="background:${m.color}"></span>${m.name}`; wrap.appendChild(lbl); });
             $$('#module-filters input').forEach(c => c.addEventListener("change", () => { state.modules = new Set($$('#module-filters input:checked').map(x => x.value)); renderGraph(); }));
-            $$('input[name="grade"]').forEach(r => r.addEventListener("change", () => { state.grade = r.value; renderGraph(); }));
+            $$('input[name="stage"]').forEach(r => r.addEventListener("change", () => { state.stage = r.value; renderGraph(); }));
+            $("#edition-select").addEventListener("change", (e) => {
+                state.edition = e.target.value;
+                resolveDataset(state.edition);
+                forceLayout();
+                state.selectedId = null; state.selectedConn = null;
+                renderGraph();
+                if (window.innerWidth <= 820) renderMobileTree();
+                detailPanel.innerHTML = emptyDetail();
+                updateMasteryBar();
+                const edName = (EDITIONS.find(x => x.id === state.edition) || {}).name || "";
+                toast("已切换至 " + edName);
+            });
 
             $("#home-explore").addEventListener("click", () => $("#home").classList.add("hidden"));
             $("#home-edit").addEventListener("click", () => { $("#home").classList.add("hidden"); setMode("edit"); });

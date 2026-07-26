@@ -17,11 +17,24 @@ bash deploy.sh
 
 脚本会：创建公开仓库 `junior-math-knowledge-map` → 提交 `index.html` → 推送到 `main` → 开启 GitHub Pages（分支 `main`，根目录）。
 
-## 线上地址
+## 线上地址（已部署）
 
-部署成功后：`https://<你的用户名>.github.io/junior-math-knowledge-map/`
+🔗 https://relaxbutalert-wq.github.io/junior-math-knowledge-map/
+
+仓库 `relaxbutalert-wq/junior-math-knowledge-map`（公开，分支 `main`，根目录）。
+
+## 重新部署 / 更新内容
+
+修改 `index.html` 后：
+
+```bash
+cd deploy-github-pages
+git add -A && git commit -m "update" && git push
+```
+
+约 1 分钟后站点自动刷新。
 
 ## 备注
 
 - 文件完全自包含，也可直接拖到任意静态托管（Netlify / Vercel / Cloudflare Pages / EdgeOne）。
-- 当前 GitHub 用户名识别为 `relaxbutalert-wq`；如需改仓库名或用户名，编辑 `deploy.sh` 顶部的 `REPO` / `USER` 变量。
+- 本次通过经典 Token 临时部署；Token 用后已可撤销（GitHub → Settings → Developer settings → Personal access tokens）。

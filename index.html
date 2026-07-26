@@ -82,13 +82,13 @@
         .node { cursor: pointer; }
         .node text { font-size: 13px; font-weight: 600; fill: var(--ink); pointer-events:none; }
         .node .badge { font-size: 9px; fill: #fff; }
-        .node:hover rect { filter: drop-shadow(0 8px 18px rgba(79,70,229,.35)); transform: scale(1.06); }
+        .node:hover rect { filter: drop-shadow(0 12px 26px rgba(79,70,229,.42)); transform: scale(1.08); stroke: var(--accent); stroke-width: 2.4; }
         .node.sel rect { stroke: var(--accent); stroke-width: 2.5; filter: drop-shadow(0 8px 20px rgba(79,70,229,.45)); }
         .node.hit rect { stroke: var(--accent); stroke-width: 2.5; filter: drop-shadow(0 0 14px var(--glow)); }
         .node.dim { opacity: .14; }
         .node .status-dot { transition: all .2s; }
         .conn { fill:none; stroke: var(--prereq); stroke-width: 2; transition: opacity .25s, stroke .25s, stroke-width .25s; }
-        .conn.related { stroke: var(--related); stroke-width: 1.6; stroke-dasharray: 2 5; }
+        .conn.related { stroke: var(--related); stroke-width: 1.5; stroke-dasharray: 1 7; opacity: .55; }
         .conn.dim { opacity: .06; }
         .conn.lit { stroke: var(--glow); stroke-width: 3.4; filter: drop-shadow(0 0 8px var(--glow)); }
         .band-label { font-size: 13px; font-weight: 700; fill: var(--muted); opacity:.5; letter-spacing:.05em; }
@@ -152,6 +152,12 @@
         .stat span { font-size:12.5px; color:var(--muted); }
         .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
         .hero-actions .btn { height:46px; padding:0 24px; font-size:15px; }
+        .hero .en-tag { font-size:14px; color:var(--accent); font-weight:600; letter-spacing:.04em; margin:-4px 0 4px; }
+        .features { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:30px; text-align:left; }
+        .feat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow: var(--shadow); }
+        .feat-ic { font-size:22px; }
+        .feat-t { font-size:14.5px; font-weight:800; margin:8px 0 5px; color:var(--ink); }
+        .feat-d { font-size:12.5px; color:var(--muted); line-height:1.6; }
 
         /* ---------- modal ---------- */
         .backdrop { position:fixed; inset:0; background:rgba(20,22,30,.45); z-index:70; display:none; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
@@ -200,6 +206,7 @@
             .search-box { max-width:none; }
             .title small { display:none; }
             .mastery-wrap { display:none; }
+            .features { grid-template-columns: 1fr; }
         }
         .edition-select-wrap { margin-bottom: 4px; }
         .edition-select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; background: #fff; color: var(--ink); cursor: pointer; }
@@ -210,7 +217,7 @@
 <body>
     <header>
         <div class="logo">脉</div>
-        <div class="title">脉络 Mailuo <small>中小学数学知识图谱 · Knowledge Graph</small></div>
+        <div class="title">脉络 Mailuo <small>Interactive Math Knowledge Graph</small></div>
         <div class="search-box">
             <span class="ic">🔍</span>
             <input id="search" type="text" placeholder="搜索知识点，例如：二次函数" autocomplete="off">
@@ -282,7 +289,8 @@
     <div class="overlay" id="home">
         <div class="hero">
             <div class="kicker">AI Knowledge Graph for Mathematics</div>
-            <h1>脉络</h1>
+            <h1>脉络 Mailuo</h1>
+            <p class="en-tag">Interactive Math Knowledge Graph</p>
             <p>脉络 Mailuo 把数学知识按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。覆盖 <b>小学 → 初中 → 高中</b> 全学段，并支持北师大 / 人教 / 华师大多版本切换。</p>
             <div class="stats">
                 <div class="stat"><b id="stat-stage">3</b><span>学段覆盖</span></div>
@@ -293,6 +301,11 @@
                 <button class="btn primary" id="home-explore">🚀 开始探索</button>
                 <button class="btn" id="home-edit">✏️ 进入编辑模式</button>
                 <button class="btn" id="home-about">📋 查看项目说明</button>
+            </div>
+            <div class="features">
+                <div class="feat"><div class="feat-ic">🕸</div><div class="feat-t">知识网络</div><div class="feat-d">依赖 + 关联双类型边，看得见知识如何彼此相连，而非教材线性目录。</div></div>
+                <div class="feat"><div class="feat-ic">📚</div><div class="feat-t">全学段 · 多版本</div><div class="feat-d">小学 → 初中 → 高中一图贯通，北师大 / 人教 / 华师大一键切换。</div></div>
+                <div class="feat"><div class="feat-ic">🤖</div><div class="feat-t">AI 学习助手</div><div class="feat-d">讲解 / 举例 / 出题，点状知识可延展为持续对话（接口预留）。</div></div>
             </div>
         </div>
     </div>
@@ -344,7 +357,7 @@
                 <li>双模式：浏览（查看 / 搜索 / 路径高亮）与编辑（拖拽 / 改字 / 调箭头）。</li>
                 <li>知识点搜索 + 前置路径高亮 + 路径发光动画。</li>
                 <li>掌握状态标记 + 完成率统计。</li>
-                <li>节点富信息卡（学习时间 / 考试频率 / 掌握程度 / 典型题 / 中考 / 视频 / 文章）。</li>
+                <li>节点富信息卡（重要程度 / 考试频率 / 预计学习 / 常见分值 / 典型题 / 中考·高考 / 视频 / 文章）。</li>
                 <li>聊天式 AI 助教（演示模式，可接真实 API）。</li>
                 <li>导入导出 PNG / SVG / JSON；移动端知识树。</li>
             </ul>
@@ -379,8 +392,7 @@
     <div class="toast" id="toast"></div>
     <input type="file" id="file-input" accept="application/json" style="display:none">
 
-    <script type="application/json" id="graph-data">
-{
+    <script type="application/json" id="graph-data">{
   "modules": [
     {
       "id": "number",
@@ -1692,10 +1704,199 @@
       "from": "real-numbers",
       "to": "quadratic-radical",
       "kind": "related"
+    },
+    {
+      "from": "integer-mul-div",
+      "to": "fraction",
+      "kind": "related"
+    },
+    {
+      "from": "fraction",
+      "to": "linear-equation-one",
+      "kind": "related"
+    },
+    {
+      "from": "linear-system",
+      "to": "linear-function",
+      "kind": "related"
+    },
+    {
+      "from": "linear-inequality",
+      "to": "linear-function",
+      "kind": "related"
+    },
+    {
+      "from": "variable-relation",
+      "to": "quadratic-function",
+      "kind": "related"
+    },
+    {
+      "from": "variable-relation",
+      "to": "func-concept",
+      "kind": "related"
+    },
+    {
+      "from": "power-func",
+      "to": "deriv-basic",
+      "kind": "related"
+    },
+    {
+      "from": "func-app",
+      "to": "deriv-app",
+      "kind": "related"
+    },
+    {
+      "from": "lines-angles",
+      "to": "triangle",
+      "kind": "related"
+    },
+    {
+      "from": "lines-angles",
+      "to": "position-coordinate",
+      "kind": "related"
+    },
+    {
+      "from": "triangle",
+      "to": "parallelogram",
+      "kind": "related"
+    },
+    {
+      "from": "parallel-proof",
+      "to": "parallelogram",
+      "kind": "related"
+    },
+    {
+      "from": "similarity",
+      "to": "circle",
+      "kind": "related"
+    },
+    {
+      "from": "circle",
+      "to": "position-coordinate",
+      "kind": "related"
+    },
+    {
+      "from": "axis-symmetry",
+      "to": "rhombus",
+      "kind": "related"
+    },
+    {
+      "from": "axis-symmetry",
+      "to": "square",
+      "kind": "related"
+    },
+    {
+      "from": "projection-view",
+      "to": "solid-basic",
+      "kind": "related"
+    },
+    {
+      "from": "rich-graphics",
+      "to": "position-coordinate",
+      "kind": "related"
+    },
+    {
+      "from": "prim-perimeter",
+      "to": "parallelogram",
+      "kind": "related"
+    },
+    {
+      "from": "prim-perimeter",
+      "to": "rectangle",
+      "kind": "related"
+    },
+    {
+      "from": "prim-num",
+      "to": "rational-numbers",
+      "kind": "related"
+    },
+    {
+      "from": "set-basic",
+      "to": "logic-prop",
+      "kind": "related"
+    },
+    {
+      "from": "vector-plane",
+      "to": "solid-parallel",
+      "kind": "related"
+    },
+    {
+      "from": "vector-plane",
+      "to": "analytic-line",
+      "kind": "related"
+    },
+    {
+      "from": "complex-num",
+      "to": "analytic-circle",
+      "kind": "related"
+    },
+    {
+      "from": "solid-point",
+      "to": "analytic-line",
+      "kind": "related"
+    },
+    {
+      "from": "solid-parallel",
+      "to": "analytic-line",
+      "kind": "related"
+    },
+    {
+      "from": "analytic-line",
+      "to": "analytic-ellipse",
+      "kind": "related"
+    },
+    {
+      "from": "analytic-hyper",
+      "to": "analytic-parab",
+      "kind": "related"
+    },
+    {
+      "from": "deriv-basic",
+      "to": "analytic-circle",
+      "kind": "related"
+    },
+    {
+      "from": "deriv-basic",
+      "to": "ineq-basic",
+      "kind": "related"
+    },
+    {
+      "from": "seq-arith",
+      "to": "func-concept",
+      "kind": "related"
+    },
+    {
+      "from": "seq-sum",
+      "to": "func-app",
+      "kind": "related"
+    },
+    {
+      "from": "ineq-linear",
+      "to": "linear-function",
+      "kind": "related"
+    },
+    {
+      "from": "counting",
+      "to": "binom",
+      "kind": "related"
+    },
+    {
+      "from": "binom",
+      "to": "prob-dist",
+      "kind": "related"
+    },
+    {
+      "from": "prob-dist",
+      "to": "stat-inf",
+      "kind": "related"
+    },
+    {
+      "from": "probability-advanced",
+      "to": "stat-inf",
+      "kind": "related"
     }
   ]
-}
-    </script>
+}</script>
 
     <script>
     (function () {
@@ -1743,22 +1944,22 @@
 
         // ---- node rich metadata (key nodes explicit; others defaulted) ----
         const META = {
-            "factorization": { est: 40, freq: 5, level: "必会", typical: ["分解因式：x²−4x+4", "提公因式与公式法综合"], zhongkao: "近三年全国卷均出现，常与大题结合" },
-            "quadratic-equation": { est: 55, freq: 5, level: "必会", typical: ["用配方法解 x²−6x+5=0", "判别式判断根的情况"], zhongkao: "每年必考，约占 8–12 分" },
-            "linear-function": { est: 50, freq: 5, level: "必会", typical: ["求一次函数解析式", "图象与 k、b 的关系"], zhongkao: "高频，常与几何综合" },
-            "quadratic-function": { est: 70, freq: 5, level: "必会", typical: ["求顶点坐标与对称轴", "利润最值问题"], zhongkao: "压轴题常客，约占 10–14 分" },
-            "triangle": { est: 60, freq: 5, level: "必会", typical: ["全等三角形的判定", "等腰三角形性质"], zhongkao: "几何基石，贯穿全卷" },
-            "similarity": { est: 55, freq: 4, level: "必会", typical: ["相似三角形的判定", "影子测高"], zhongkao: "常与圆、函数综合" },
-            "circle": { est: 65, freq: 5, level: "必会", typical: ["圆周角定理", "切线长定理"], zhongkao: "压轴几何大题" },
-            "pythagoras": { est: 40, freq: 5, level: "必会", typical: ["已知两边求第三边", "勾股数应用"], zhongkao: "基础但极高频" },
-            "parallelogram": { est: 45, freq: 4, level: "必会", typical: ["判定与性质", "对角线互相平分"], zhongkao: "常与特殊平行四边形衔接" },
-            "rectangle": { est: 35, freq: 4, level: "必会", typical: ["矩形性质应用", "对角线相等"] },
-            "rhombus": { est: 35, freq: 4, level: "必会", typical: ["菱形对角线垂直", "面积=对角线乘积一半"] },
-            "square": { est: 30, freq: 4, level: "必会", typical: ["正方形既是矩形又是菱形"] },
-            "real-numbers": { est: 30, freq: 3, level: "理解", typical: ["无理数估算", "二次根式化简"] },
-            "inverse-function": { est: 40, freq: 3, level: "理解", typical: ["反比例函数图象与 k 的符号"] },
-            "right-triangle-trig": { est: 45, freq: 4, level: "必会", typical: ["sin/cos/tan 实际应用", "坡度问题"] },
-            "linear-equation-one": { est: 35, freq: 5, level: "必会", typical: ["移项与去括号", "配套问题"] }
+            "factorization": { est: 40, freq: 5, level: "必会", imp: 4, score: "6–10 分", typical: ["分解因式：x²−4x+4", "提公因式与公式法综合"], zhongkao: "近三年全国卷均出现，常与大题结合" },
+            "quadratic-equation": { est: 55, freq: 5, level: "必会", imp: 5, score: "8–12 分", typical: ["用配方法解 x²−6x+5=0", "判别式判断根的情况"], zhongkao: "每年必考，约占 8–12 分" },
+            "linear-function": { est: 50, freq: 5, level: "必会", imp: 5, score: "8–12 分", typical: ["求一次函数解析式", "图象与 k、b 的关系"], zhongkao: "高频，常与几何综合" },
+            "quadratic-function": { est: 70, freq: 5, level: "必会", imp: 5, score: "10–14 分", typical: ["求顶点坐标与对称轴", "利润最值问题"], zhongkao: "压轴题常客，约占 10–14 分" },
+            "triangle": { est: 60, freq: 5, level: "必会", imp: 5, score: "8–12 分", typical: ["全等三角形的判定", "等腰三角形性质"], zhongkao: "几何基石，贯穿全卷" },
+            "similarity": { est: 55, freq: 4, level: "必会", imp: 4, score: "6–10 分", typical: ["相似三角形的判定", "影子测高"], zhongkao: "常与圆、函数综合" },
+            "circle": { est: 65, freq: 5, level: "必会", imp: 5, score: "10–14 分", typical: ["圆周角定理", "切线长定理"], zhongkao: "压轴几何大题" },
+            "pythagoras": { est: 40, freq: 5, level: "必会", imp: 5, score: "4–8 分", typical: ["已知两边求第三边", "勾股数应用"], zhongkao: "基础但极高频" },
+            "parallelogram": { est: 45, freq: 4, level: "必会", imp: 4, score: "5–9 分", typical: ["判定与性质", "对角线互相平分"], zhongkao: "常与特殊平行四边形衔接" },
+            "rectangle": { est: 35, freq: 4, level: "必会", imp: 3, score: "3–6 分", typical: ["矩形性质应用", "对角线相等"] },
+            "rhombus": { est: 35, freq: 4, level: "必会", imp: 3, score: "3–6 分", typical: ["菱形对角线垂直", "面积=对角线乘积一半"] },
+            "square": { est: 30, freq: 4, level: "必会", imp: 3, score: "3–6 分", typical: ["正方形既是矩形又是菱形"] },
+            "real-numbers": { est: 30, freq: 3, level: "理解", imp: 3, score: "3–6 分", typical: ["无理数估算", "二次根式化简"] },
+            "inverse-function": { est: 40, freq: 3, level: "理解", imp: 3, score: "4–7 分", typical: ["反比例函数图象与 k 的符号"] },
+            "right-triangle-trig": { est: 45, freq: 4, level: "必会", imp: 4, score: "6–10 分", typical: ["sin/cos/tan 实际应用", "坡度问题"] },
+            "linear-equation-one": { est: 35, freq: 5, level: "必会", imp: 5, score: "6–10 分", typical: ["移项与去括号", "配套问题"] }
         };
         function metaOf(id) {
             if (META[id]) return META[id];
@@ -1766,8 +1967,10 @@
             const stg = stageOf(n.grade);
             const base = ({ "小学": 22, "初中": 42, "高中": 58 }[stg]) || 40;
             const f = ({ equation: 5, function: 5, geometry: 5, number: 3, expression: 4, transform: 3, probstat: 3, "set-logic": 3, vector: 4, calculus: 5, solid: 4, analytic: 4 }[n.module] || 3);
+            const imp = f;
+            const score = stg === "小学" ? "基础（不单独计分）" : stg === "高中" ? "高考核心（约 12–18 分）" : (f >= 5 ? "8–14 分" : "3–8 分");
             const exam = stg === "小学" ? "小学基础，重在理解概念与熟练运算，为初中打底。" : stg === "高中" ? "高考核心模块，建议结合真题综合训练。" : undefined;
-            return { est: base, freq: f, level: "理解", typical: ["（典型题待补充）"], zhongkao: stg === "初中" ? "（中考数据待补充）" : undefined, exam: exam };
+            return { est: base, freq: f, imp: imp, level: "理解", score: score, typical: ["（典型题待补充）"], zhongkao: stg === "初中" ? "（中考数据待补充）" : undefined, exam: exam };
         }
         const stars = (n) => { let s = ""; for (let i = 1; i <= 5; i++) s += i <= n ? "★" : "<span class='off'>★</span>"; return s; };
 
@@ -1892,13 +2095,20 @@
             updateConnections();
         }
 
-        function bezierPath(A, B) {
-            const mx = (A.cx + B.cx) / 2, my = (A.cy + B.cy) / 2;
+        function bezierPath(A, B, related, idx) {
             const dx = B.cx - A.cx, dy = B.cy - A.cy, len = Math.hypot(dx, dy) || 1;
             const nx = -dy / len, ny = dx / len;
-            const off = Math.min(60, len * 0.22);
-            const c1x = A.cx + dx * 0.25 + nx * off, c1y = A.cy + dy * 0.25 + ny * off;
-            const c2x = A.cx + dx * 0.75 + nx * off, c2y = A.cy + dy * 0.75 + ny * off;
+            let off, t1, t2;
+            if (related) {
+                const sign = (idx % 2 === 0) ? 1 : -1;
+                off = sign * Math.min(140, len * 0.45);
+                t1 = 0.16; t2 = 0.84;
+            } else {
+                off = Math.min(80, len * 0.3);
+                t1 = 0.25; t2 = 0.75;
+            }
+            const c1x = A.cx + dx * t1 + nx * off, c1y = A.cy + dy * t1 + ny * off;
+            const c2x = A.cx + dx * t2 + nx * off, c2y = A.cy + dy * t2 + ny * off;
             return `M ${A.cx} ${A.cy} C ${c1x} ${c1y} ${c2x} ${c2y} ${B.cx} ${B.cy}`;
         }
         function updateConnections() {
@@ -1906,7 +2116,7 @@
                 const A = nodeBox(c.from), B = nodeBox(c.to);
                 const p = connEls[i];
                 if (!p) return;
-                p.setAttribute("d", bezierPath(A, B));
+                p.setAttribute("d", bezierPath(A, B, c.kind === "related", i));
             });
             if (handleGroup && state.selectedConn !== null) positionConnHandles();
             if (resizeHandle) positionResizeHandle();
@@ -1942,8 +2152,16 @@
         }
 
         // ---------- selection / detail ----------
+        function rippleAt(cx, cy, maxR) {
+            const c = el("circle", { cx: cx, cy: cy, r: 6, fill: "none", stroke: "var(--accent)", "stroke-width": 3 });
+            const a1 = el("animate", { attributeName: "r", from: 6, to: maxR, dur: "0.5s", fill: "freeze" });
+            const a2 = el("animate", { attributeName: "opacity", from: 0.85, to: 0, dur: "0.5s", fill: "freeze" });
+            c.appendChild(a1); c.appendChild(a2); svg.appendChild(c);
+            setTimeout(() => c.remove(), 560);
+        }
         function onNodeClick(id) {
             state.selectedId = id; state.selectedConn = null;
+            const b = nodeBox(id); rippleAt(b.cx, b.cy, Math.max(b.w, b.h) * 0.95);
             applySelectionVisual();
             renderDetail(id);
             if (state.mode === "browse") animatePath(id);
@@ -1996,9 +2214,11 @@
                 </div>
                 <div class="d-section"><h4>核心指标</h4>
                     <div class="meta-grid">
-                        <div class="meta-card"><div class="k">预计学习时间</div><div class="v">${meta.est} 分钟</div></div>
+                        <div class="meta-card"><div class="k">重要程度</div><div class="v stars">${stars(meta.imp || 3)}</div></div>
                         <div class="meta-card"><div class="k">考试频率</div><div class="v stars">${stars(meta.freq)}</div></div>
-                        <div class="meta-card"><div class="k">推荐掌握程度</div><div class="v">${meta.level}</div></div>
+                        <div class="meta-card"><div class="k">预计学习</div><div class="v">${meta.est} 分钟</div></div>
+                        <div class="meta-card"><div class="k">常见分值</div><div class="v">${esc(meta.score || "—")}</div></div>
+                        <div class="meta-card"><div class="k">掌握程度</div><div class="v">${meta.level}</div></div>
                         <div class="meta-card"><div class="k">所属年级</div><div class="v">${esc(n.grade)}</div></div>
                     </div>
                 </div>

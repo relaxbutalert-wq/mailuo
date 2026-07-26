@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MathPath · 数学知识图谱</title>
+    <title>脉络 Mailuo · 初中数学知识图谱</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Ccircle cx='10' cy='11' r='3.4' fill='white'/%3E%3Ccircle cx='22' cy='21' r='3.4' fill='white'/%3E%3Cpath d='M10 11 L22 21' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
     <style>
         :root {
@@ -205,8 +205,8 @@
 </head>
 <body>
     <header>
-        <div class="logo">M</div>
-        <div class="title">MathPath <small>数学知识图谱 · AI Learning Graph</small></div>
+        <div class="logo">脉</div>
+        <div class="title">脉络 Mailuo <small>初中数学知识图谱 · Knowledge Graph</small></div>
         <div class="search-box">
             <span class="ic">🔍</span>
             <input id="search" type="text" placeholder="搜索知识点，例如：二次函数" autocomplete="off">
@@ -270,8 +270,8 @@
     <div class="overlay" id="home">
         <div class="hero">
             <div class="kicker">AI Knowledge Graph for Mathematics</div>
-            <h1>MathPath</h1>
-            <p>MathPath 把数学知识按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。当前覆盖初一至初三核心内容，未来可平滑扩展到小学、高中与大学。</p>
+            <h1>脉络</h1>
+            <p>脉络 Mailuo 把数学知识按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。当前覆盖初一至初三核心内容，未来可平滑扩展到小学、高中与大学。</p>
             <div class="stats">
                 <div class="stat"><b>3</b><span>年级阶段</span></div>
                 <div class="stat"><b>7</b><span>知识模块</span></div>
@@ -315,9 +315,9 @@
     <div class="backdrop" id="about-modal">
         <div class="modal">
             <button class="close-x" data-close>×</button>
-            <h2>MathPath · 作品集说明</h2>
+            <h2>脉络 Mailuo · 作品集说明</h2>
             <h3>一、项目背景</h3>
-            <p>MathPath 是一个把数学知识组织成<b>知识网络</b>的产品原型：节点是知识点，边分「依赖（先学后学）」与「关联（横向联系）」两类。它脱胎于「初中数学知识路径图」——之所以重命名，是因为产品早已不止是一张图：它有首页、搜索、筛选、编辑、知识详情与 AI 助教，更像一款教育产品，而非一张流程图。当前覆盖初一至初三，品牌去学段化，未来可平滑扩展到小学、高中与大学。</p>
+            <p>脉络 Mailuo 是一个把数学知识组织成<b>知识网络</b>的产品原型：节点是知识点，边分「依赖（先学后学）」与「关联（横向联系）」两类。它脱胎于「初中数学知识路径图」——之所以更名，是因为产品早已不止是一张图：它有首页、搜索、筛选、编辑、知识详情与 AI 助教，更像一款教育产品，而非一张流程图。当前覆盖初一至初三，品牌去学段化，未来可平滑扩展到小学、高中与大学。</p>
             <h3>二、为什么做</h3>
             <p>市面上的「知识图谱」很多只是教材目录的换皮。我想要的，是能回答「要学会二次函数，我得先补哪些？」的工具——即<b>以学习路径为中心</b>，而非以教材章节为中心。</p>
             <h3>三、用户是谁</h3>
@@ -354,10 +354,10 @@
             <h3>七、未来规划</h3>
             <ul>
                 <li>多教材版本（北师大 / 人教 / 华师大）数据切换。</li>
-                <li>学段扩展：小学 → 初中 → 高中 → 大学，统一品牌 MathPath。</li>
+                <li>学段扩展：小学 → 初中 → 高中 → 大学，统一品牌 脉络 Mailuo。</li>
                 <li>AI 接入真实大模型，支持自然语言答疑与自动出题。</li>
                 <li>学习进度云同步、错题关联到节点、掌握率看板。</li>
-                <li>独立域名（mathpath.app）+ 自定义品牌，替代 GitHub Pages 子域。</li>
+                <li>独立域名（mailuo.app / mailuo.com）+ 自定义品牌，替代 GitHub Pages 子域。</li>
             </ul>
         </div>
     </div>
@@ -956,12 +956,12 @@
             return { modules: rawData.modules, nodes: rawData.nodes.map(n => ({ ...n, x: nodeState[n.id].x, y: nodeState[n.id].y, w: nodeState[n.id].w, h: nodeState[n.id].h })), connections: rawData.connections, version: "北师大版", updatedAt: new Date().toISOString().slice(0, 10), mastery: state.mastery };
         }
         function download(name, content, type) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
-        function exportJSON() { download("MathPath.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
+        function exportJSON() { download("Mailuo.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
         function exportSVG() {
             const clone = svg.cloneNode(true);
             clone.setAttribute("xmlns", SVGNS);
             const out = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
-            download("MathPath.svg", out, "image/svg+xml"); toast("已导出 SVG");
+            download("Mailuo.svg", out, "image/svg+xml"); toast("已导出 SVG");
         }
         async function exportPNG() {
             const xml = new XMLSerializer().serializeToString(svg);
@@ -973,7 +973,7 @@
                 const ctx = cv.getContext("2d");
                 ctx.fillStyle = "#f7f8fb"; ctx.fillRect(0, 0, cv.width, cv.height);
                 ctx.drawImage(img, 0, 0, cv.width, cv.height);
-                cv.toBlob(b => { download("MathPath.png", b, "image/png"); toast("已导出 PNG"); });
+                cv.toBlob(b => { download("Mailuo.png", b, "image/png"); toast("已导出 PNG"); });
             };
             img.onerror = () => toast("PNG 导出需浏览器渲染，请重试");
             img.src = svg64;

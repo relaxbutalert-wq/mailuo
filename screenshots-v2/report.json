@@ -1,0 +1,22 @@
+{
+  "title": "初中数学知识路径图 · 知识网络",
+  "nodeCount": 36,
+  "connCount": 49,
+  "relatedEdges": 11,
+  "hasFavicon": true,
+  "homeVisible": true,
+  "bezierHasPath": true,
+  "detailHasPathCard": true,
+  "detailHasStars": true,
+  "litEdgesAfterSelect": 4,
+  "masteryLabel": "掌握 3%",
+  "masteryDotDone": true,
+  "editMode": true,
+  "searchHit": true,
+  "searchDimsOthers": true,
+  "aiReply": true,
+  "mobileTreeNodes": 36,
+  "desktopCanvasHidden": true,
+  "consoleErrors": [],
+  "pageErrors": []
+}

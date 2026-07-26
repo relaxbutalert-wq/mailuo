@@ -2,431 +2,360 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>初中数学知识路径图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>初中数学知识路径图 · 知识网络</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Ccircle cx='10' cy='11' r='3.4' fill='white'/%3E%3Ccircle cx='22' cy='21' r='3.4' fill='white'/%3E%3Cpath d='M10 11 L22 21' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
     <style>
         :root {
-            --bg: #f5f7fa;
+            --bg: #f7f8fb;
             --panel: #ffffff;
-            --border: #e5e7eb;
-            --text: #1f2937;
+            --ink: #1f2430;
             --muted: #6b7280;
-            --accent: #4f6df5;
-            --accent-soft: #eef2ff;
-            --arrow: #94a3b8;
-            --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+            --line: #e6e8ef;
+            --accent: #4f46e5;
+            --accent-soft: #eef0ff;
+            --prereq: #94a3b8;
+            --related: #c4b5fd;
+            --glow: #818cf8;
+            --shadow: 0 10px 30px rgba(31,36,48,.10);
+            --radius: 14px;
+            --status-none: #cbd5e1;
+            --status-doing: #fbbf24;
+            --status-done: #34d399;
         }
         * { box-sizing: border-box; }
-        html, body { height: 100%; }
+        html, body { height: 100%; margin: 0; }
         body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            -webkit-font-smoothing: antialiased;
+            font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--ink); overflow: hidden;
         }
         button { font-family: inherit; cursor: pointer; }
 
-        /* ---------- Toolbar ---------- */
-        .toolbar {
-            height: 58px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0 18px;
-            background: var(--panel);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        /* ---------- header ---------- */
+        header {
+            height: 60px; display: flex; align-items: center; gap: 14px;
+            padding: 0 18px; background: rgba(255,255,255,.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line); position: relative; z-index: 30;
         }
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; white-space: nowrap; }
-        .brand .logo {
-            width: 30px; height: 30px; border-radius: 8px;
-            background: linear-gradient(135deg, #4f6df5, #7c93f7);
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 16px;
-        }
-        .search-box {
-            flex: 1; max-width: 420px; position: relative;
-        }
-        .search-box input {
-            width: 100%; height: 38px; padding: 0 14px 0 36px;
-            border: 1px solid var(--border); border-radius: 10px;
-            font-size: 14px; background: #f8fafc; outline: none;
-        }
-        .search-box input:focus { border-color: var(--accent); background: #fff; }
-        .search-box .ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+        .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg,#6366f1,#8b5cf6); display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px; box-shadow: 0 4px 12px rgba(99,102,241,.4); }
+        .title { font-size: 16px; font-weight: 700; letter-spacing:.2px; white-space: nowrap; }
+        .title small { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 6px; }
+        .search-box { position: relative; flex: 1; max-width: 360px; }
+        .search-box .ic { position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.5; }
+        #search { width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 10px; padding: 0 34px 0 34px; font-size: 14px; background: #fff; outline: none; transition: border-color .2s, box-shadow .2s; }
+        #search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+        #search-clear { position:absolute; right:8px; top:50%; transform:translateY(-50%); border:none;background:transparent;color:var(--muted);font-size:18px;line-height:1;display:none; }
         .spacer { flex: 1; }
+        .mastery-wrap { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+        .mastery-bar { width: 90px; height: 7px; border-radius: 99px; background: var(--line); overflow:hidden; }
+        .mastery-bar > i { display:block; height:100%; width:0%; background: linear-gradient(90deg,var(--status-doing),var(--status-done)); transition: width .5s cubic-bezier(.16,1,.3,1); }
+        .mode-seg { display:flex; background:#eef0f6; border-radius:10px; padding:3px; }
+        .mode-seg button { border:none; background:transparent; padding:7px 14px; border-radius:8px; font-size:13px; color:var(--muted); font-weight:600; transition: all .2s; }
+        .mode-seg button.active { background:#fff; color:var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        .btn { border:1px solid var(--line); background:#fff; color:var(--ink); height:38px; padding:0 14px; border-radius:10px; font-size:13px; font-weight:600; transition: all .2s; white-space:nowrap; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn.primary { background: var(--accent); color:#fff; border-color: var(--accent); }
+        .btn.primary:hover { filter: brightness(1.05); color:#fff; }
 
-        .seg { display: inline-flex; background: #f1f5f9; border-radius: 10px; padding: 3px; }
-        .seg button {
-            border: none; background: transparent; padding: 7px 16px; border-radius: 8px;
-            font-size: 13px; font-weight: 600; color: var(--muted);
-        }
-        .seg button.active { background: #fff; color: var(--accent); box-shadow: var(--shadow); }
+        /* ---------- layout ---------- */
+        .layout { display:flex; height: calc(100% - 60px); }
+        .sidebar { width: 232px; background: var(--panel); border-right: 1px solid var(--line); padding: 16px; overflow-y:auto; flex-shrink:0; }
+        .sidebar h3 { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin: 0 0 10px; }
+        .opt { display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:9px; font-size:13.5px; cursor:pointer; transition: background .15s; }
+        .opt:hover { background:#f4f5f9; }
+        .opt input { accent-color: var(--accent); }
+        .mod-dot { width:11px; height:11px; border-radius:4px; flex-shrink:0; }
+        .seg-mini { display:flex; gap:6px; margin-bottom:12px; }
+        .seg-mini label { flex:1; text-align:center; font-size:12.5px; padding:7px 0; border-radius:9px; border:1px solid var(--line); cursor:pointer; transition: all .15s; }
+        .seg-mini input { display:none; }
+        .seg-mini label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight:600; }
 
-        .btn {
-            height: 38px; padding: 0 14px; border: 1px solid var(--border); border-radius: 10px;
-            background: #fff; font-size: 13px; font-weight: 600; color: var(--text);
-            display: inline-flex; align-items: center; gap: 6px;
+        .canvas-wrap { flex:1; position:relative; overflow:hidden; background:
+            radial-gradient(circle at 1px 1px, #e9ebf2 1px, transparent 0) 0 0 / 22px 22px,
+            var(--bg);
         }
-        .btn:hover { border-color: #cbd5e1; }
-        .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .btn.primary:hover { background: #3f5ae0; }
+        svg#graph { width:100%; height:100%; display:block; cursor: default; }
+        svg#graph.mode-edit { cursor: grab; }
 
-        .menu-wrap { position: relative; }
-        .menu {
-            position: absolute; right: 0; top: 44px; background: #fff; border: 1px solid var(--border);
-            border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; min-width: 180px; z-index: 60;
-            display: none;
-        }
-        .menu.open { display: block; }
-        .menu button {
-            display: flex; width: 100%; text-align: left; border: none; background: transparent;
-            padding: 9px 12px; border-radius: 8px; font-size: 13px; color: var(--text);
-        }
-        .menu button:hover { background: #f1f5f9; }
-        .menu .sep { height: 1px; background: var(--border); margin: 5px 4px; }
-
-        /* ---------- Layout ---------- */
-        .layout { display: flex; height: calc(100vh - 58px); }
-        .panel-left {
-            width: 224px; flex: none; background: var(--panel); border-right: 1px solid var(--border);
-            overflow-y: auto; padding: 18px 16px;
-        }
-        .canvas-wrap { flex: 1; overflow: auto; padding: 18px; }
-        .panel-right {
-            width: 312px; flex: none; background: var(--panel); border-left: 1px solid var(--border);
-            overflow-y: auto; padding: 18px 16px;
-        }
-
-        .filter-group { margin-bottom: 22px; }
-        .filter-group h4 { margin: 0 0 10px; font-size: 12px; letter-spacing: .5px; color: var(--muted); text-transform: uppercase; }
-        .opt { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 8px; font-size: 14px; cursor: pointer; }
-        .opt:hover { background: #f8fafc; }
-        .opt input { accent-color: var(--accent); width: 15px; height: 15px; }
-        .mod-dot { width: 12px; height: 12px; border-radius: 4px; flex: none; }
-        .hint-note { font-size: 12px; color: var(--muted); line-height: 1.6; background: #f8fafc; border: 1px dashed var(--border); border-radius: 10px; padding: 10px 12px; }
-
-        /* ---------- SVG graph ---------- */
-        #graph { width: 100%; min-width: 1080px; height: auto; display: block; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+        /* nodes */
+        .node rect { transition: transform .25s cubic-bezier(.16,1,.3,1), filter .25s, stroke .2s; transform-box: fill-box; transform-origin: center; }
         .node { cursor: pointer; }
-        body.mode-edit .node { cursor: grab; }
-        body.mode-edit .node.dragging { cursor: grabbing; }
-        .node rect { transition: filter .15s, stroke .15s; }
-        .node:hover rect { filter: drop-shadow(0 4px 8px rgba(0,0,0,.14)); }
-        .node.selected rect { stroke: var(--accent) !important; stroke-width: 2.5; }
-        .node text { pointer-events: none; user-select: none; }
-        .conn { fill: none; stroke: var(--arrow); stroke-width: 2; }
-        .conn.sel { stroke: var(--accent); stroke-width: 3; }
-        .arrow-handle { fill: #fff; stroke: var(--accent); stroke-width: 2; cursor: move; display: none; }
-        .resize-handle { fill: #fff; stroke: var(--accent); stroke-width: 2; cursor: nwse-resize; display: none; }
-        body.mode-edit .arrow-handle, body.mode-edit .resize-handle { display: block; }
+        .node text { font-size: 13px; font-weight: 600; fill: var(--ink); pointer-events:none; }
+        .node .badge { font-size: 9px; fill: #fff; }
+        .node:hover rect { filter: drop-shadow(0 8px 18px rgba(79,70,229,.35)); transform: scale(1.06); }
+        .node.sel rect { stroke: var(--accent); stroke-width: 2.5; filter: drop-shadow(0 8px 20px rgba(79,70,229,.45)); }
+        .node.hit rect { stroke: var(--accent); stroke-width: 2.5; filter: drop-shadow(0 0 14px var(--glow)); }
+        .node.dim { opacity: .14; }
+        .node .status-dot { transition: all .2s; }
+        .conn { fill:none; stroke: var(--prereq); stroke-width: 2; transition: opacity .25s, stroke .25s, stroke-width .25s; }
+        .conn.related { stroke: var(--related); stroke-width: 1.6; stroke-dasharray: 2 5; }
+        .conn.dim { opacity: .06; }
+        .conn.lit { stroke: var(--glow); stroke-width: 3.4; filter: drop-shadow(0 0 8px var(--glow)); }
+        .band-label { font-size: 13px; font-weight: 700; fill: var(--muted); opacity:.5; letter-spacing:.05em; }
+        .resize-handle { fill: var(--accent); cursor: nwse-resize; }
 
-        /* ---------- Detail panel ---------- */
-        .detail-empty { color: var(--muted); font-size: 14px; line-height: 1.7; text-align: center; margin-top: 60px; }
-        .detail-empty .big { font-size: 40px; margin-bottom: 10px; }
-        .d-title { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
-        .d-badges { display: flex; gap: 8px; margin: 10px 0 16px; flex-wrap: wrap; }
-        .badge { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-        .d-section { margin-bottom: 16px; }
-        .d-section h5 { margin: 0 0 8px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-        .chip-list { display: flex; flex-wrap: wrap; gap: 7px; }
-        .chip { font-size: 13px; padding: 5px 11px; border-radius: 8px; background: #f1f5f9; color: var(--text); cursor: pointer; border: 1px solid transparent; }
+        /* detail panel */
+        .detail { width: 340px; background: var(--panel); border-left: 1px solid var(--line); overflow-y:auto; flex-shrink:0; padding: 18px; }
+        .detail-empty { color: var(--muted); text-align:center; margin-top: 40px; font-size: 14px; line-height:1.7; }
+        .detail-empty .big { font-size: 38px; margin-bottom: 10px; }
+        .d-grade { display:inline-block; font-size:11px; font-weight:700; color:#fff; background:var(--accent); padding:3px 9px; border-radius:99px; }
+        .d-module { display:inline-block; font-size:11px; font-weight:600; color:var(--muted); background:#f1f2f7; padding:3px 9px; border-radius:99px; margin-left:6px; }
+        .d-name { font-size: 21px; font-weight: 800; margin: 12px 0 4px; }
+        .d-section { margin-top: 16px; }
+        .d-section h4 { font-size: 12.5px; color: var(--muted); margin: 0 0 7px; text-transform: uppercase; letter-spacing:.05em; }
+        .chips { display:flex; flex-wrap:wrap; gap:6px; }
+        .chip { font-size:12.5px; background:#f4f5f9; border:1px solid var(--line); padding:5px 10px; border-radius:8px; cursor:pointer; transition: all .15s; }
         .chip:hover { border-color: var(--accent); color: var(--accent); }
-        .chip.empty { background: transparent; color: #9ca3af; cursor: default; border: 1px dashed var(--border); }
-        ul.bullets { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.75; color: #374151; }
-        ul.bullets li { margin-bottom: 4px; }
+        .meta-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        .meta-card { background:#f8f9fc; border:1px solid var(--line); border-radius:11px; padding:10px 12px; }
+        .meta-card .k { font-size:11px; color:var(--muted); }
+        .meta-card .v { font-size:14px; font-weight:700; margin-top:3px; }
+        .stars { color: #f59e0b; letter-spacing:1px; }
+        .stars .off { color: #d8dae3; }
+        ul.clean { margin:6px 0 0; padding-left: 18px; font-size:13.5px; line-height:1.75; }
+        ul.clean li { margin-bottom:3px; }
+        .status-row { display:flex; align-items:center; gap:8px; }
+        .status-dot-btn { width:22px; height:22px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px var(--line); cursor:pointer; transition: transform .15s; }
+        .status-dot-btn:hover { transform: scale(1.18); }
+        .sd-none{background:var(--status-none);} .sd-doing{background:var(--status-doing);} .sd-done{background:var(--status-done);}
+        .path-card { background: linear-gradient(135deg,#eef0ff,#f5f3ff); border:1px solid #e0e0fb; border-radius:12px; padding:12px 14px; }
+        .path-step { display:flex; align-items:center; gap:8px; font-size:13px; padding:4px 0; }
+        .path-step .num { width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+        .path-step.done .num { background: var(--status-done); }
+        .path-arrow { color:var(--muted); margin-left:6px; }
 
-        /* ---------- Home overlay ---------- */
-        .home {
-            position: fixed; inset: 0; z-index: 100;
-            background: radial-gradient(1200px 600px at 50% -10%, #eaf0ff 0%, #f5f7fa 55%);
-            display: flex; align-items: center; justify-content: center; padding: 24px;
+        /* AI chat */
+        .ai-box { margin-top:16px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+        .ai-head { background:#fafaff; padding:9px 12px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px; border-bottom:1px solid var(--line); }
+        .ai-head .ava { width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px; }
+        .ai-msgs { max-height: 220px; overflow-y:auto; padding:10px 12px; display:flex; flex-direction:column; gap:8px; background:#fff; }
+        .ai-msg { font-size:13px; line-height:1.6; padding:8px 11px; border-radius:11px; max-width:92%; }
+        .ai-msg.bot { background:#f4f4ff; align-self:flex-start; border-bottom-left-radius:3px; }
+        .ai-msg.me { background:var(--accent); color:#fff; align-self:flex-end; border-bottom-right-radius:3px; }
+        .ai-input { display:flex; border-top:1px solid var(--line); }
+        .ai-input input { flex:1; border:none; padding:10px 12px; font-size:13px; outline:none; }
+        .ai-input button { border:none; background:var(--accent); color:#fff; padding:0 14px; font-weight:700; }
+        .ai-quick { display:flex; gap:6px; flex-wrap:wrap; padding:8px 10px; border-top:1px solid var(--line); background:#fafaff; }
+        .ai-quick button { font-size:11.5px; border:1px solid var(--line); background:#fff; border-radius:99px; padding:4px 9px; color:var(--muted); }
+        .ai-quick button:hover { border-color:var(--accent); color:var(--accent); }
+
+        /* ---------- home overlay ---------- */
+        .overlay { position:fixed; inset:0; z-index:60; background: radial-gradient(1200px 600px at 50% -10%, #eef0ff, transparent), var(--bg); display:flex; align-items:center; justify-content:center; padding:24px; }
+        .overlay.hidden { display:none; }
+        .hero { max-width: 720px; text-align:center; }
+        .hero .kicker { font-size:13px; font-weight:700; color:var(--accent); letter-spacing:.12em; text-transform:uppercase; }
+        .hero h1 { font-size: 40px; font-weight: 850; margin: 14px 0 12px; letter-spacing:-.5px; background: linear-gradient(120deg,#1f2430,#4f46e5); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .hero p { font-size:16px; color:var(--muted); line-height:1.7; margin:0 auto; max-width:560px; }
+        .stats { display:flex; gap:14px; justify-content:center; margin:28px 0; }
+        .stat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 22px; min-width:120px; box-shadow: var(--shadow); }
+        .stat b { font-size:26px; font-weight:800; color:var(--accent); display:block; }
+        .stat span { font-size:12.5px; color:var(--muted); }
+        .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+        .hero-actions .btn { height:46px; padding:0 24px; font-size:15px; }
+
+        /* ---------- modal ---------- */
+        .backdrop { position:fixed; inset:0; background:rgba(20,22,30,.45); z-index:70; display:none; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
+        .backdrop.open { display:flex; }
+        .modal { background:#fff; border-radius:18px; max-width:760px; width:100%; padding:26px 30px; box-shadow: var(--shadow); }
+        .modal h2 { margin:0 0 4px; font-size:22px; }
+        .modal h3 { font-size:15px; margin:20px 0 8px; color:var(--accent); }
+        .modal h4 { font-size:13.5px; margin:14px 0 6px; color:var(--ink); }
+        .modal p, .modal li { font-size:14px; line-height:1.75; color:#374151; }
+        .modal ul { margin:6px 0; padding-left:20px; }
+        .modal .close-x { float:right; border:none; background:transparent; font-size:24px; color:var(--muted); cursor:pointer; line-height:1; }
+        .modal table { width:100%; border-collapse:collapse; font-size:13px; margin:8px 0; }
+        .modal th, .modal td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+        .modal th { background:#f7f8fb; font-weight:700; }
+        .tag { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; }
+        .tag-a{background:#fee2e2;color:#b91c1c;} .tag-b{background:#ffedd5;color:#c2410c;} .tag-c{background:#fef9c3;color:#a16207;} .tag-d{background:#e0e7ff;color:#4338ca;} .tag-e{background:#fce7f3;color:#a21caf;} .tag-f{background:#dcfce7;color:#15803d;}
+        .timeline { border-left:2px solid var(--line); margin-left:8px; padding-left:16px; }
+        .timeline .tl { position:relative; margin-bottom:14px; }
+        .timeline .tl::before { content:""; position:absolute; left:-23px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--accent); }
+        .timeline .tl b { font-size:13.5px; }
+        .timeline .tl span { font-size:12.5px; color:var(--muted); }
+
+        /* ---------- mobile tree ---------- */
+        .mobile-only { display:none; }
+        #mtree { position:absolute; inset:0; overflow-y:auto; padding:14px; background:var(--bg); }
+        .mt-grade { margin-bottom:14px; }
+        .mt-grade > .mt-h { font-size:15px; font-weight:800; padding:10px 14px; background:#fff; border:1px solid var(--line); border-radius:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+        .mt-mod { margin:8px 0 8px 10px; }
+        .mt-mod > .mt-h { font-size:13.5px; font-weight:700; padding:8px 12px; background:#f4f5f9; border-radius:10px; display:flex; justify-content:space-between; cursor:pointer; color:#374151; }
+        .mt-node { margin:6px 0 6px 10px; padding:11px 13px; background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+        .mt-node .mt-meta { font-size:11px; color:var(--muted); margin-top:3px; }
+        .mt-hidden { display:none; }
+        .mt-detail-sheet { position:fixed; left:0; right:0; bottom:0; top:auto; max-height:82vh; background:#fff; border-radius:18px 18px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.2); z-index:80; transform:translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); display:flex; flex-direction:column; }
+        .mt-detail-sheet.open { transform:translateY(0); }
+        .mt-sheet-handle { width:40px; height:4px; background:#e2e4ec; border-radius:99px; margin:10px auto; }
+        .mt-sheet-body { overflow-y:auto; padding:6px 18px 24px; }
+
+        .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:#1f2430; color:#fff; padding:10px 18px; border-radius:10px; font-size:13px; opacity:0; pointer-events:none; transition: all .3s; z-index:90; }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .inline-editor { position:fixed; display:none; z-index:150; min-width:120px; min-height:40px; border:2px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:15px; font-family:inherit; resize:none; outline:none; box-shadow:0 6px 20px rgba(0,0,0,.15); }
+
+        @media (max-width: 820px) {
+            .sidebar, .detail { display:none; }
+            .desktop-only { display:none; }
+            .mobile-only { display:block; }
+            .search-box { max-width:none; }
+            .title small { display:none; }
+            .mastery-wrap { display:none; }
         }
-        .home-card { max-width: 720px; text-align: center; }
-        .home-kicker { display: inline-block; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
-        .home h1 { font-size: 42px; margin: 0 0 14px; letter-spacing: -1px; }
-        .home p.sub { font-size: 17px; color: var(--muted); margin: 0 auto 30px; max-width: 560px; line-height: 1.7; }
-        .stats { display: flex; justify-content: center; gap: 14px; margin-bottom: 34px; flex-wrap: wrap; }
-        .stat { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px 26px; min-width: 130px; box-shadow: var(--shadow); }
-        .stat .num { font-size: 30px; font-weight: 800; color: var(--accent); }
-        .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
-        .home-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .home-actions .btn { height: 46px; padding: 0 24px; font-size: 15px; }
-
-        /* ---------- Modal ---------- */
-        .backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .backdrop.open { display: flex; }
-        .modal { background: #fff; border-radius: 16px; max-width: 560px; width: 100%; padding: 26px 28px; box-shadow: 0 20px 60px rgba(0,0,0,.25); max-height: 86vh; overflow-y: auto; }
-        .modal h2 { margin: 0 0 6px; font-size: 22px; }
-        .modal .lead { color: var(--muted); font-size: 14px; margin: 0 0 18px; line-height: 1.7; }
-        .modal h4 { margin: 18px 0 8px; font-size: 14px; }
-        .modal ul { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.85; color: #374151; }
-        .modal .close-x { float: right; border: none; background: transparent; font-size: 22px; color: var(--muted); line-height: 1; }
-        .modal h3 { font-size: 17px; margin: 24px 0 4px; color: var(--ink); }
-        .modal .sub2 { color: var(--muted); font-size: 13px; margin: 0 0 10px; line-height: 1.6; }
-        .modal table.doc-table { width: 100%; border-collapse: collapse; margin: 10px 0 4px; font-size: 12.5px; }
-        .modal table.doc-table th, .modal table.doc-table td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; vertical-align: top; line-height: 1.55; }
-        .modal table.doc-table th { background: #f1f5f9; color: #334155; font-weight: 600; white-space: nowrap; }
-        .modal code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-        .modal .tag { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 700; }
-        .modal .tag.a { background: #fee2e2; color: #b91c1c; }
-        .modal .tag.b { background: #fef3c7; color: #b45309; }
-        .modal .tag.c { background: #e0e7ff; color: #4338ca; }
-        .modal .tag.d { background: #dcfce7; color: #15803d; }
-        .modal .tag.e { background: #e2e8f0; color: #475569; }
-        .modal ul.timeline { list-style: none; border-left: 3px solid var(--accent); margin: 10px 0 4px; padding-left: 16px; }
-        .modal ul.timeline li { margin-bottom: 13px; position: relative; font-size: 13.5px; line-height: 1.7; }
-        .modal ul.timeline li::before { content: ""; position: absolute; left: -22px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-        .modal ul.timeline li b { color: var(--ink); }
-        .modal .kv { font-size: 13px; line-height: 1.8; color: #374151; }
-        .modal .kv b { color: var(--ink); }
-        kbd { background: #f1f5f9; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; font-size: 12px; font-family: inherit; }
-
-        /* ---------- Toast ---------- */
-        .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: #1f2937; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13.5px; opacity: 0; transition: .25s; z-index: 300; pointer-events: none; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        .inline-editor {
-            position: fixed; display: none; z-index: 150; min-width: 120px; min-height: 40px;
-            border: 2px solid var(--accent); border-radius: 10px; padding: 8px 10px; font-size: 15px;
-            font-family: inherit; resize: none; outline: none; box-shadow: 0 6px 20px rgba(0,0,0,.15);
-        }
-
-        /* ---------- Search highlight / dim ---------- */
-        .node.hit rect { stroke: var(--accent) !important; stroke-width: 3; filter: drop-shadow(0 4px 10px rgba(79,109,245,.35)); }
-        .node.dim, .conn.dim { opacity: .15; transition: opacity .2s; }
-        .search-box .clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; display: none; padding: 2px 4px; }
-        .search-box .clear.show { display: block; }
-
-        /* ---------- AI demo box ---------- */
-        .ai-box { margin-top: 18px; border-top: 1px dashed var(--border); padding-top: 16px; }
-        .ai-box .ai-head { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 11px; }
-        .ai-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ai-opt { border: 1px solid var(--border); background: #fff; border-radius: 9px; padding: 7px 11px; font-size: 12.5px; color: var(--text); }
-        .ai-opt:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-        .ai-answer { margin-top: 12px; background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.75; color: #334155; }
-        .ai-answer .ai-q { font-weight: 700; color: var(--accent); margin-bottom: 6px; display: block; }
     </style>
 </head>
-<body class="mode-browse">
-
-    <!-- ===================== Toolbar ===================== -->
-    <header class="toolbar">
-        <div class="brand"><span class="logo">∑</span><span>初中数学知识路径图</span></div>
+<body>
+    <header>
+        <div class="logo">∑</div>
+        <div class="title">初中数学知识路径图 <small>知识网络 · Knowledge Graph</small></div>
         <div class="search-box">
             <span class="ic">🔍</span>
             <input id="search" type="text" placeholder="搜索知识点，例如：二次函数" autocomplete="off">
-            <span class="clear" id="search-clear">×</span>
+            <button id="search-clear">×</button>
         </div>
         <div class="spacer"></div>
-        <div class="seg" id="mode-seg">
-            <button data-mode="browse" class="active">浏览模式</button>
-            <button data-mode="edit">编辑模式</button>
+        <div class="mastery-wrap">
+            <span id="mastery-label">掌握 0%</span>
+            <div class="mastery-bar"><i id="mastery-fill"></i></div>
         </div>
-        <div class="menu-wrap">
-            <button class="btn" id="export-btn">⬇ 导出 ▾</button>
-            <div class="menu" id="export-menu">
-                <button data-act="png">导出 PNG 图片</button>
-                <button data-act="svg">导出 SVG 矢量图</button>
-                <button data-act="json">导出 JSON 数据</button>
-                <div class="sep"></div>
-                <button data-act="import">导入 JSON 数据</button>
-                <button data-act="reset">恢复默认版本</button>
+        <div class="mode-seg" id="mode-seg">
+            <button data-mode="browse" class="active">浏览</button>
+            <button data-mode="edit">编辑</button>
+        </div>
+        <button class="btn" id="about-btn">📋 项目说明</button>
+        <button class="btn" id="help-btn">❔ 帮助</button>
+        <button class="btn primary" id="export-btn">⬇ 导出</button>
+        <div class="backdrop" id="export-menu" style="padding:0;background:transparent;align-items:flex-start;justify-content:flex-end;">
+            <div style="margin:56px 14px 0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);width:190px;overflow:hidden;">
+                <button data-act="png" style="display:block;width:100%;text-align:left;padding:11px 14px;border:none;background:#fff;font-size:13.5px;">🖼 导出 PNG</button>
+                <button data-act="svg" style="display:block;width:100%;text-align:left;padding:11px 14px;border:none;background:#fff;font-size:13.5px;border-top:1px solid var(--line);">📐 导出 SVG</button>
+                <button data-act="json" style="display:block;width:100%;text-align:left;padding:11px 14px;border:none;background:#fff;font-size:13.5px;border-top:1px solid var(--line);">🧾 导出 JSON</button>
+                <button data-act="import" style="display:block;width:100%;text-align:left;padding:11px 14px;border:none;background:#fff;font-size:13.5px;border-top:1px solid var(--line);">📥 导入 JSON</button>
+                <button data-act="reset" style="display:block;width:100%;text-align:left;padding:11px 14px;border:none;background:#fff;font-size:13.5px;border-top:1px solid var(--line);color:#b91c1c;">↺ 恢复默认</button>
             </div>
         </div>
-        <button class="btn" id="help-btn">❔ 帮助</button>
-        <button class="btn" id="about-btn">📋 项目说明</button>
     </header>
 
-    <!-- ===================== Main layout ===================== -->
     <div class="layout">
-        <!-- Left filter panel -->
-        <aside class="panel-left">
-            <div class="filter-group">
-                <h4>年级阶段</h4>
-                <label class="opt"><input type="radio" name="grade" value="all" checked> 全部年级</label>
-                <label class="opt"><input type="radio" name="grade" value="初一"> 初一</label>
-                <label class="opt"><input type="radio" name="grade" value="初二"> 初二</label>
-                <label class="opt"><input type="radio" name="grade" value="初三"> 初三</label>
+        <aside class="sidebar desktop-only">
+            <h3>年级阶段</h3>
+            <div class="seg-mini" id="grade-seg">
+                <label><input type="radio" name="grade" value="all" checked>全部</label>
+                <label><input type="radio" name="grade" value="初一">初一</label>
+                <label><input type="radio" name="grade" value="初二">初二</label>
+                <label><input type="radio" name="grade" value="初三">初三</label>
             </div>
-            <div class="filter-group">
-                <h4>知识模块</h4>
-                <div id="module-filters"></div>
-            </div>
-            <div class="filter-group">
-                <h4>教材版本</h4>
-                <label class="opt"><input type="radio" name="version" value="北师大版" checked disabled> 北师大版</label>
-                <div class="hint-note">更多教材版本将在后续阶段支持，数据结构已为其预留扩展位。</div>
-            </div>
+            <h3>知识模块</h3>
+            <div id="module-filters"></div>
+            <h3 style="margin-top:18px;">掌握状态</h3>
+            <div class="opt"><span class="status-dot-btn sd-none" style="width:14px;height:14px;cursor:default;"></span> 未学</div>
+            <div class="opt"><span class="status-dot-btn sd-doing" style="width:14px;height:14px;cursor:default;"></span> 学习中</div>
+            <div class="opt"><span class="status-dot-btn sd-done" style="width:14px;height:14px;cursor:default;"></span> 已掌握</div>
         </aside>
 
-        <!-- Center canvas -->
-        <main class="canvas-wrap">
-            <svg id="graph" viewBox="0 0 1400 950" xmlns="http://www.w3.org/2000/svg"></svg>
-        </main>
+        <div class="canvas-wrap desktop-only">
+            <svg id="graph" class="mode-browse"></svg>
+        </div>
+        <div class="mobile-only" id="mtree"></div>
 
-        <!-- Right detail panel -->
-        <aside class="panel-right" id="detail-panel">
-            <div class="detail-empty">
-                <div class="big">🧭</div>
-                点击任意知识节点，查看它的年级、所属模块、前置知识与后续关联。
-            </div>
-        </aside>
+        <aside class="detail desktop-only" id="detail-panel"></aside>
     </div>
 
-    <!-- ===================== Home overlay ===================== -->
-    <div class="home" id="home">
-        <div class="home-card">
-            <span class="home-kicker">初中数学 · 知识路径工具</span>
+    <!-- mobile detail sheet -->
+    <div class="mt-detail-sheet" id="mt-sheet">
+        <div class="mt-sheet-handle"></div>
+        <div class="mt-sheet-body" id="mt-sheet-body"></div>
+    </div>
+
+    <!-- home -->
+    <div class="overlay" id="home">
+        <div class="hero">
+            <div class="kicker">Knowledge Graph · 初中数学</div>
             <h1>初中数学知识路径图</h1>
-            <p class="sub">按年级、知识领域与前置关系，快速理解初中数学知识体系。从初一到初三，看清代数、几何与概率统计的知识进阶关系。</p>
+            <p>把初一至初三的核心知识，按 <b>依赖关系</b>、<b>关联关系</b> 与 <b>学习路径</b> 组织成一张可探索的知识网络——不只是教材目录，而是看得见「谁先学、谁后学、彼此如何相连」。</p>
             <div class="stats">
-                <div class="stat"><div class="num">3</div><div class="lbl">个年级阶段</div></div>
-                <div class="stat"><div class="num">7</div><div class="lbl">类知识模块</div></div>
-                <div class="stat"><div class="num">34</div><div class="lbl">个核心知识节点</div></div>
+                <div class="stat"><b>3</b><span>年级阶段</span></div>
+                <div class="stat"><b>7</b><span>知识模块</span></div>
+                <div class="stat"><b>36</b><span>核心节点</span></div>
             </div>
-            <div class="home-actions">
-                <button class="btn primary" id="home-explore">开始探索</button>
-                <button class="btn" id="home-edit">进入编辑模式</button>
-                <button class="btn" id="home-about">查看项目说明</button>
+            <div class="hero-actions">
+                <button class="btn primary" id="home-explore">🚀 开始探索</button>
+                <button class="btn" id="home-edit">✏️ 进入编辑模式</button>
+                <button class="btn" id="home-about">📋 查看项目说明</button>
             </div>
         </div>
     </div>
 
-    <!-- ===================== Help modal ===================== -->
+    <!-- help modal -->
     <div class="backdrop" id="help-modal">
         <div class="modal">
-            <button class="close-x" data-close="help-modal">×</button>
+            <button class="close-x" data-close>×</button>
             <h2>使用说明</h2>
-            <p class="lead">本工具把初中数学核心知识按年级、模块与前置关系可视化组织，支持浏览查看与编辑两种模式。</p>
             <h4>浏览模式（默认）</h4>
             <ul>
-                <li>点击任意节点，在右侧查看其年级、模块、前置知识与后续关联；重点节点还含核心内容与常见易错点。</li>
-                <li>点击连线，可查看它所连接的前后知识点。</li>
-                <li>顶部搜索框输入知识点，可自动定位并高亮其前置路径，其余节点自动淡化。</li>
-                <li>左侧可按年级阶段、知识模块筛选聚焦，突出对应区域。</li>
-                <li>节点不可拖动、文字不可修改——保证知识结构的稳定呈现。</li>
+                <li>点击任意节点：右侧查看年级、模块、<b>前置学习链</b>、后续关联与推荐路径。</li>
+                <li>点击连线：查看所连接的前后知识点（实线＝依赖，虚线＝关联）。</li>
+                <li>节点下方状态点可标记 <b>未学 / 学习中 / 已掌握</b>，顶栏实时统计完成率。</li>
+                <li>搜索知识点会<b>自动高亮其完整前置路径</b>并淡化无关节点。</li>
             </ul>
-            <h4>编辑模式（教师 / 教研）</h4>
+            <h4>编辑模式</h4>
             <ul>
-                <li>拖动节点调整位置；双击节点文字可直接修改并自动保存。</li>
-                <li>点击连线后，拖动两端圆点改位置，滚轮调线宽，<kbd>Alt</kbd>+滚轮调箭头大小。</li>
-                <li>选中节点后，拖动右下角小方块可缩放节点尺寸。</li>
+                <li>拖动节点调整位置；双击节点文字可修改；选中后拖右下角缩放。</li>
+                <li>点击连线后出现两端圆点，可拖动调整箭头；滚轮调线宽（Alt+滚轮调箭头大小）。</li>
+                <li>编辑自动保存在本地浏览器；「导出 → 恢复默认」可还原。</li>
             </ul>
             <h4>数据与导出</h4>
             <ul>
-                <li>编辑结果自动保存在本地浏览器（localStorage），刷新不丢失。</li>
-                <li>右上角「导出」可导出 PNG 图片、SVG 矢量图、JSON 数据；也可导入自定义 JSON 版本。</li>
-                <li>「恢复默认版本」可清除本地修改，回到初始知识图谱。</li>
-            </ul>
-            <h4>快捷键</h4>
-            <ul>
-                <li><kbd>Shift</kbd> + <kbd>Delete</kbd>：清空本地保存，恢复默认。</li>
+                <li>支持导出 PNG / SVG / JSON，导入 JSON 恢复你的版本。</li>
+                <li>移动端自动切换为「知识树」逐级展开，无需缩放画布。</li>
             </ul>
         </div>
     </div>
 
-    <!-- ===================== About / portfolio modal ===================== -->
+    <!-- about / portfolio modal -->
     <div class="backdrop" id="about-modal">
         <div class="modal">
-            <button class="close-x" data-close="about-modal">×</button>
-            <h2>项目说明</h2>
-            <p class="lead">初中数学知识路径图 · 作品集工程笔记。记录项目背景、用户痛点、产品方案、技术栈，以及测试样例、错误分类、问题归因与迭代记录。</p>
-
+            <button class="close-x" data-close>×</button>
+            <h2>项目说明 · 作品集</h2>
             <h3>一、项目背景</h3>
-            <p class="kv">初中数学知识点多、跨年级关联强，学生常「学了后面忘前面」，难以看清知识依赖关系。传统课件多为静态图，无法交互探索。本项目把初一至初三核心知识按<strong>年级、模块、前置关系</strong>组织成可交互的知识路径图。</p>
-
-            <h3>二、用户痛点</h3>
+            <p>初中数学知识点多、跨年级关联强，学生常「学了后面忘前面」。传统课件是静态流程图，只能按教材顺序看，看不清知识之间的依赖与关联。本项目把初一至初三核心知识重构成一张<b>知识网络</b>：节点是知识点，边分「依赖（先学后学）」与「关联（横向联系）」两类。</p>
+            <h3>二、为什么做</h3>
+            <p>市面上的「知识图谱」很多只是教材目录的换皮。我想要的，是能回答「要学会二次函数，我得先补哪些？」的工具——即<b>以学习路径为中心</b>，而非以教材章节为中心。</p>
+            <h3>三、用户是谁</h3>
             <ul>
-                <li><b>知识分散</b>：代数 / 几何 / 概率统计跨三个年级，缺乏统一视图。</li>
-                <li><b>依赖不清</b>：不知道某知识点要先学什么、之后连什么。</li>
-                <li><b>静态呈现</b>：不能搜索、不能聚焦、不能按自己的理解重组结构。</li>
-                <li><b>作品陈旧</b>：原稿为楷体 + 纯红粗箭头的手绘风教研图，不适合作为求职作品集。</li>
+                <li><b>学生</b>：浏览结构、搜索知识点、标记掌握状态、看推荐学习路径。</li>
+                <li><b>家长 / 老师</b>：快速理解知识体系，定位薄弱前置。</li>
+                <li><b>面试官</b>：一打开即见产品思路与工程实现。</li>
             </ul>
-
-            <h3>三、产品方案（双模式）</h3>
+            <h3>四、核心功能</h3>
             <ul>
-                <li><b>学习查看模式（浏览）</b>：浏览知识结构、搜索知识点、查看前置 / 后续、高亮学习路径。</li>
-                <li><b>教师编辑模式（编辑）</b>：修改节点、调整位置、编辑关系、保存自定义版本、导出图片或数据。</li>
+                <li>力导向知识网络布局（非教材列），Bezier 曲线连线。</li>
+                <li>双模式：浏览（查看 / 搜索 / 路径高亮）与编辑（拖拽 / 改字 / 调箭头）。</li>
+                <li>知识点搜索 + 前置路径高亮 + 路径发光动画。</li>
+                <li>掌握状态标记 + 完成率统计。</li>
+                <li>节点富信息卡（学习时间 / 考试频率 / 掌握程度 / 典型题 / 中考 / 视频 / 文章）。</li>
+                <li>聊天式 AI 助教（演示模式，可接真实 API）。</li>
+                <li>导入导出 PNG / SVG / JSON；移动端知识树。</li>
             </ul>
-
-            <h3>四、技术栈</h3>
-            <p class="kv">
-                • <b>原生 HTML + 内联 CSS + SVG + 原生 JavaScript</b>（零运行时依赖、零 CDN，可双击离线打开）<br>
-                • 知识数据内嵌为 <code>&lt;script type="application/json"&gt;</code>，页面数据驱动渲染<br>
-                • <b>localStorage</b> 持久化编辑结果<br>
-                • <b>jsdom</b> 做自动化冒烟测试（init + 核心交互零报错）
-            </p>
-
-            <h3>五、测试样例（功能验证矩阵）</h3>
-            <p class="sub2">共 20 项。jsdom 自动断言覆盖渲染与交互逻辑；PNG 依赖浏览器 canvas，标注「浏览器目视」。</p>
-            <table class="doc-table">
-                <thead><tr><th>编号</th><th>测试项</th><th>操作 / 输入</th><th>预期结果</th><th>验证方式</th></tr></thead>
-                <tbody>
-                    <tr><td>T01</td><td>图谱渲染</td><td>打开页面</td><td>渲染 34 节点 / 36 连线 / 7 模块色带</td><td>jsdom 断言</td></tr>
-                    <tr><td>T02</td><td>首页 → 探索</td><td>点「开始探索」</td><td>首页隐藏，进入浏览模式</td><td>jsdom</td></tr>
-                    <tr><td>T03</td><td>节点详情</td><td>点「一元二次方程」</td><td>右侧显示年级 / 模块 / 前置 / 核心内容 / 易错点</td><td>jsdom</td></tr>
-                    <tr><td>T04</td><td>连线关系</td><td>点某条连线</td><td>显示所连前后知识点</td><td>jsdom</td></tr>
-                    <tr><td>T05</td><td>模式切换</td><td>点「编辑模式」</td><td>body 加 <code>mode-edit</code>，节点可拖</td><td>jsdom</td></tr>
-                    <tr><td>T06</td><td>编辑-拖拽</td><td>拖动节点</td><td>位置变化并 localStorage 保存</td><td>浏览器</td></tr>
-                    <tr><td>T07</td><td>编辑-改字</td><td>双击节点改名</td><td>文字更新并保存</td><td>浏览器</td></tr>
-                    <tr><td>T08</td><td>编辑-连线</td><td>拖箭头端点 / 滚轮调宽</td><td>连线形态更新</td><td>浏览器</td></tr>
-                    <tr><td>T09</td><td>缩放节点</td><td>拖右下角方块</td><td>节点尺寸变化</td><td>浏览器</td></tr>
-                    <tr><td>T10</td><td>搜索高亮</td><td>输入「二次」</td><td>目标 + 传递性前置高亮，其余淡化并居中</td><td>jsdom</td></tr>
-                    <tr><td>T11</td><td>搜索清空</td><td>点 ×</td><td>高亮清除</td><td>jsdom</td></tr>
-                    <tr><td>T12</td><td>模块筛选</td><td>取消某模块勾选</td><td>该模块节点淡化</td><td>jsdom</td></tr>
-                    <tr><td>T13</td><td>年级筛选</td><td>选「初三」</td><td>非初三节点淡化</td><td>jsdom</td></tr>
-                    <tr><td>T14</td><td>AI 演示</td><td>点「比较相近知识点」</td><td>显示预置对比回答</td><td>jsdom</td></tr>
-                    <tr><td>T15</td><td>导出 JSON</td><td>点导出 JSON</td><td>下载含当前数据 JSON</td><td>jsdom（逻辑）</td></tr>
-                    <tr><td>T16</td><td>导入 JSON</td><td>选 JSON 文件</td><td>重载并重建筛选 / 派生表</td><td>jsdom（逻辑）</td></tr>
-                    <tr><td>T17</td><td>恢复默认</td><td>点恢复默认</td><td>清除本地修改回初始</td><td>jsdom</td></tr>
-                    <tr><td>T18</td><td>导出 PNG</td><td>点导出 PNG</td><td>下载 2× 清晰位图</td><td>浏览器目视</td></tr>
-                    <tr><td>T19</td><td>导出 SVG</td><td>点导出 SVG</td><td>下载内联样式矢量图</td><td>浏览器</td></tr>
-                    <tr><td>T20</td><td>持久化</td><td>编辑后刷新</td><td>本地修改保留</td><td>浏览器</td></tr>
-                </tbody>
-            </table>
-
-            <h3>六、错误分类</h3>
-            <p class="sub2">开发过程中按「现象 → 严重度」归类，共 7 类（A/B 为崩溃级，C/D 为功能缺陷，E 为测试环境限制，F 为体验问题）。</p>
-            <table class="doc-table">
-                <thead><tr><th>类别</th><th>类型</th><th>现象</th><th>严重度</th></tr></thead>
-                <tbody>
-                    <tr><td><span class="tag a">A</span></td><td>初始化崩溃</td><td>页面加载即抛错：在 <code>null</code> 上调用 addEventListener</td><td>高</td></tr>
-                    <tr><td><span class="tag b">B</span></td><td>交互运行时错误</td><td>切换编辑模式时抛错，功能中断</td><td>高</td></tr>
-                    <tr><td><span class="tag c">C1</span></td><td>数据完整性</td><td>重点节点「实数」缺失核心内容 / 易错点</td><td>中</td></tr>
-                    <tr><td><span class="tag c">C2</span></td><td>功能门控过严</td><td>浏览模式点击连线无效（应显示关系）</td><td>中</td></tr>
-                    <tr><td><span class="tag d">D</span></td><td>SVG 渲染</td><td>箭头 marker 用 innerHTML 注入可能不渲染</td><td>中</td></tr>
-                    <tr><td><span class="tag e">E</span></td><td>测试环境限制</td><td>jsdom 无 scrollTo / canvas，PNG 无法自动测</td><td>低（非缺陷）</td></tr>
-                    <tr><td><span class="tag e">F</span></td><td>体验 / 健壮性</td><td>搜索 / 筛选每次按键弹 toast 干扰</td><td>低</td></tr>
-                </tbody>
-            </table>
-
-            <h3>七、问题归因</h3>
-            <p class="sub2">每一类错误的根因与对应修复方式。</p>
-            <table class="doc-table">
-                <thead><tr><th>类别</th><th>根因</th><th>修复方式</th></tr></thead>
-                <tbody>
-                    <tr><td><span class="tag a">A</span></td><td>元素在 <code>renderGraph()</code> 内重建，但事件在模块顶层（元素为 <code>null</code> 时）绑定，生命周期与作用域错位</td><td>元素声明提到模块作用域；监听器在 <code>renderGraph()</code> 内、元素存在后再绑定</td></tr>
-                    <tr><td><span class="tag b">B</span></td><td>模式切换逻辑复制时误用旧变量名 <code>mode</code>，而非事件目标 <code>b.dataset.mode</code></td><td>改为 <code>b.dataset.mode</code></td></tr>
-                    <tr><td><span class="tag c">C1</span></td><td>人工从约 50 个写死节点抽取 34 个 JSON 时漏写一处 detail</td><td>补 <code>real-numbers</code> 的 core / commonErrors</td></tr>
-                    <tr><td><span class="tag c">C2</span></td><td><code>selectConn</code> 仅 edit 模式生效，浏览态被 early return 拦截</td><td>改为浏览态展示关系、编辑态才允许调整</td></tr>
-                    <tr><td><span class="tag d">D</span></td><td>SVG 命名空间下 innerHTML 解析不确定，defs / marker 未进入渲染树</td><td>改用 <code>createElementNS</code> 创建 marker 并 append</td></tr>
-                    <tr><td><span class="tag e">E</span></td><td>测试沙箱 jsdom 与真实浏览器 API 差异（scrollTo、canvas、Image）</td><td>代码加防御（scrollTo 判存在）；PNG 标注浏览器目视验证</td></tr>
-                    <tr><td><span class="tag e">F</span></td><td>分阶段占位实现未清理，占位提示体验差</td><td>移除占位 toast，改为实时高亮</td></tr>
-                </tbody>
-            </table>
-
-            <h3>八、迭代记录</h3>
-            <ul class="timeline">
-                <li><b>v0 原稿</b>：<code>流程图源师版_年级阶段版.html</code> —— 楷体、写死 SVG、约 50 节点、纯红粗箭头；仅基础拖拽 / 改字 / 调箭头；无数据模型、无模式、无导出。</li>
-                <li><b>2026-07-21 需求评审</b>：用户提出改造定位（双模式、首页、详情栏、搜索高亮、筛选、导入导出、AI 演示、现代教科风）。</li>
-                <li><b>2026-07-22 Checkpoint A</b>：数据结构 JSON 化（34 节点 / 36 连线 / 7 模块）；产品外壳（顶栏 / 首页 / 三栏 / 帮助 / 恢复默认）；双模式门控；详情面板（8 重点节点富文本）；编辑交互（拖拽 / 改字 / 调箭头 / 缩放）；localStorage。修复 A、C1、C2、D、F。</li>
-                <li><b>2026-07-22 Checkpoint B</b>：搜索与传递性前置路径高亮；年级 / 模块 / 版本筛选叠加；PNG / SVG / JSON 导出与 JSON 导入；AI 演示入口（4 选项预置回答，8 节点精写）。修复 B、E。</li>
-                <li><b>2026-07-22 本轮</b>：新增测试样例 / 错误分类 / 问题归因 / 迭代记录（作品集文档 + 项目说明弹窗）。</li>
+            <h3>五、技术实现</h3>
+            <p>单文件交付，原生 <b>HTML / SVG / JavaScript</b>，零运行时依赖、零 CDN：</p>
+            <ul>
+                <li>数据驱动：知识以内嵌 JSON 描述（节点 + 带 kind 的连线），渲染与交互全部由数据生成。</li>
+                <li>力导向布局：轻量弹簧-电荷仿真，按模块聚簇，viewBox 自适应。</li>
+                <li>状态持久化：localStorage 保存布局、编辑与掌握状态。</li>
+                <li>SVG 序列化导出 PNG / SVG，无需后端。</li>
+            </ul>
+            <h3>六、迭代记录</h3>
+            <div class="timeline">
+                <div class="tl"><b>v0 原稿</b><br><span>单页 SVG 流程图，硬编码节点 + 就近箭头，楷体红箭头。</span></div>
+                <div class="tl"><b>Checkpoint A</b><br><span>数据驱动重构；现代教科风三栏；首页 / 双模式 / 帮助 / 恢复默认。</span></div>
+                <div class="tl"><b>Checkpoint B</b><br><span>搜索路径高亮、年级模块筛选、导入导出、AI 演示入口。</span></div>
+                <div class="tl"><b>知识网络升级</b><br><span>依赖/关联双类型边 + 几何分支（平行→矩形/菱形→正方形）；力导向布局；Bezier 连线；Hover 发光；掌握状态与完成率；路径推荐 + 发光动画；聊天式 AI；移动端知识树；作品集闭环页。</span></div>
+            </div>
+            <h3>七、未来规划</h3>
+            <ul>
+                <li>多教材版本（北师大 / 人教 / 华师大）数据切换。</li>
+                <li>AI 接入真实大模型，支持自然语言答疑与自动出题。</li>
+                <li>学习进度云同步、错题关联到节点。</li>
             </ul>
         </div>
     </div>
@@ -435,347 +364,523 @@
     <div class="toast" id="toast"></div>
     <input type="file" id="file-input" accept="application/json" style="display:none">
 
-    <!-- ===================== Embedded data ===================== -->
     <script type="application/json" id="graph-data">
     {
-      "meta": { "title": "初中数学知识路径图", "version": "北师大版", "updatedAt": "2026-07-22" },
       "modules": [
-        { "id": "number",     "name": "数",           "color": "#FFE599" },
-        { "id": "expression", "name": "式",           "color": "#F8CBAD" },
-        { "id": "equation",   "name": "方程与不等式", "color": "#A9D18E" },
-        { "id": "function",   "name": "函数",         "color": "#C28B8B" },
-        { "id": "geometry",   "name": "几何",         "color": "#B4C6E7" },
-        { "id": "transform",  "name": "图形变换",     "color": "#D9C2F0" },
-        { "id": "probstat",   "name": "概率统计",     "color": "#C0C0C0" }
+        { "id": "number", "name": "数与式", "color": "#6366f1" },
+        { "id": "expression", "name": "代数式与运算", "color": "#0ea5e9" },
+        { "id": "equation", "name": "方程与不等式", "color": "#10b981" },
+        { "id": "function", "name": "函数", "color": "#f59e0b" },
+        { "id": "geometry", "name": "图形与几何", "color": "#ec4899" },
+        { "id": "transform", "name": "图形变换", "color": "#8b5cf6" },
+        { "id": "probstat", "name": "概率与统计", "color": "#64748b" }
       ],
       "nodes": [
-        { "id": "rational-numbers", "name": "有理数及其运算", "grade": "初一", "module": "number", "x": 125, "y": 762.5, "w": 110, "h": 60 },
-        { "id": "real-numbers", "name": "实数", "grade": "初一", "module": "number", "x": 140, "y": 577.5, "w": 80, "h": 45,
-          "detail": { "core": ["有理数与无理数的统称", "算术平方根、平方根与立方根", "实数的大小比较与运算"],
-                      "commonErrors": ["误以为带根号的数都是无理数（如 √4 = 2）", "混淆平方根与算术平方根", "忽略 √a 中 a ≥ 0 的限制"] } },
-        { "id": "integer-add-sub", "name": "整式及其加减", "grade": "初一", "module": "expression", "x": 195, "y": 657.5, "w": 150, "h": 45 },
-        { "id": "integer-mul-div", "name": "整式的乘除", "grade": "初一", "module": "expression", "x": 195, "y": 577.5, "w": 150, "h": 45 },
-        { "id": "factorization", "name": "因式分解", "grade": "初二", "module": "expression", "x": 205, "y": 500, "w": 130, "h": 40,
-          "detail": { "core": ["提取公因式法", "公式法（平方差、完全平方）", "十字相乘法", "分解要彻底，直到不能再分"],
-                      "commonErrors": ["分解不彻底，漏掉可继续分解的因式", "提取负号时符号处理错误", "混淆乘法公式的方向"] } },
-        { "id": "fraction", "name": "分式", "grade": "初二", "module": "expression", "x": 225, "y": 400, "w": 90, "h": 40 },
-        { "id": "linear-equation-one", "name": "一元一次方程", "grade": "初一", "module": "equation", "x": 435, "y": 777.5, "w": 170, "h": 45 },
-        { "id": "linear-system", "name": "二元一次方程组", "grade": "初一", "module": "equation", "x": 405, "y": 690, "w": 230, "h": 45 },
-        { "id": "linear-inequality", "name": "一元一次不等式与一元一次不等式组", "grade": "初一", "module": "equation", "x": 375, "y": 610, "w": 290, "h": 52,
-          "lines": ["一元一次不等式与", "一元一次不等式组"] },
-        { "id": "fractional-equation", "name": "分式方程", "grade": "初二", "module": "equation", "x": 435, "y": 540, "w": 170, "h": 45 },
-        { "id": "quadratic-equation", "name": "一元二次方程", "grade": "初三", "module": "equation", "x": 435, "y": 337.5, "w": 170, "h": 45,
-          "detail": { "core": ["一般形式 ax²+bx+c=0（a≠0）", "配方法", "公式法 x=(-b±√Δ)/2a", "因式分解法", "判别式 Δ=b²-4ac"],
-                      "commonErrors": ["忽略二次项系数 a≠0", "公式法中判别式计算错误、忘记 ±", "开平方时漏掉负根"] } },
-        { "id": "variable-relation", "name": "变量之间的关系", "grade": "初二", "module": "function", "x": 600, "y": 682.5, "w": 160, "h": 45 },
-        { "id": "linear-function", "name": "一次函数", "grade": "初二", "module": "function", "x": 620, "y": 397.5, "w": 120, "h": 45,
-          "detail": { "core": ["定义 y=kx+b（k≠0）", "图象是一条直线", "k 决定增减性，b 是 y 轴截距", "待定系数法求解析式"],
-                      "commonErrors": ["混淆 k 与 b 的几何意义", "忽略 k≠0 的条件", "由图象读取截距 / 斜率出错"] } },
-        { "id": "inverse-function", "name": "反比例函数", "grade": "初三", "module": "function", "x": 550, "y": 277.5, "w": 160, "h": 45 },
-        { "id": "quadratic-function", "name": "二次函数", "grade": "初三", "module": "function", "x": 570, "y": 157.5, "w": 120, "h": 45,
-          "detail": { "core": ["一般式 y=ax²+bx+c（a≠0）", "顶点式 y=a(x-h)²+k", "开口方向由 a 决定", "对称轴 x=-b/2a，顶点(-b/2a, …)"],
-                      "commonErrors": ["a=0 退化为一次函数却仍称二次", "顶点坐标符号弄反", "平移时 h、k 方向与符号混淆"] } },
-        { "id": "rich-graphics", "name": "丰富的图形世界", "grade": "初一", "module": "geometry", "x": 760, "y": 777.5, "w": 170, "h": 45 },
-        { "id": "basic-plane-figure", "name": "基本平面图形", "grade": "初一", "module": "geometry", "x": 760, "y": 697.5, "w": 170, "h": 45 },
-        { "id": "lines-angles", "name": "相交线与平行线", "grade": "初一", "module": "geometry", "x": 760, "y": 617.5, "w": 200, "h": 45 },
-        { "id": "triangle", "name": "三角形", "grade": "初二", "module": "geometry", "x": 950, "y": 617.5, "w": 90, "h": 45,
-          "detail": { "core": ["三边关系（两边之和 > 第三边）", "内角和 180°，外角 = 不相邻两内角和", "全等判定 SSS/SAS/ASA/AAS/HL", "等腰、等边三角形性质"],
-                      "commonErrors": ["忽视三边关系导致无解", "全等错用 SSA", "等腰三角形未分类讨论（腰 / 底不确定）漏解"] } },
-        { "id": "position-coordinate", "name": "位置与坐标", "grade": "初二", "module": "geometry", "x": 760, "y": 500, "w": 120, "h": 40 },
-        { "id": "pythagoras", "name": "勾股定理", "grade": "初二", "module": "geometry", "x": 900, "y": 500, "w": 110, "h": 40 },
-        { "id": "parallel-proof", "name": "平行线的证明", "grade": "初二", "module": "geometry", "x": 750, "y": 400, "w": 160, "h": 40 },
-        { "id": "triangle-proof", "name": "三角形的证明", "grade": "初二", "module": "geometry", "x": 920, "y": 400, "w": 150, "h": 40 },
-        { "id": "parallelogram", "name": "平行四边形", "grade": "初三", "module": "geometry", "x": 770, "y": 337.5, "w": 140, "h": 45 },
-        { "id": "special-parallelogram", "name": "特殊平行四边形", "grade": "初三", "module": "geometry", "x": 930, "y": 337.5, "w": 140, "h": 45 },
-        { "id": "projection-view", "name": "投影与视图", "grade": "初三", "module": "geometry", "x": 760, "y": 237.5, "w": 170, "h": 45 },
-        { "id": "right-triangle-trig", "name": "直角三角形的边角关系", "grade": "初三", "module": "geometry", "x": 760, "y": 157.5, "w": 220, "h": 45,
-          "lines": ["直角三角形的", "边角关系"] },
-        { "id": "circle", "name": "圆", "grade": "初三", "module": "geometry", "x": 990, "y": 157.5, "w": 60, "h": 45,
-          "detail": { "core": ["圆心、半径、直径", "垂径定理", "圆周角定理（同弧所对圆周角 = 圆心角一半）", "切线性质与判定", "弧长与扇形面积"],
-                      "commonErrors": ["垂径定理忽略‘过圆心’条件", "圆周角与圆心角关系用错", "切线判定漏掉‘垂直 + 过半径外端’"] } },
-        { "id": "axis-symmetry", "name": "生活中的轴对称", "grade": "初二", "module": "transform", "x": 1040, "y": 617.5, "w": 120, "h": 45 },
-        { "id": "translation-rotation", "name": "图形的平移与旋转", "grade": "初二", "module": "transform", "x": 1010, "y": 447.5, "w": 180, "h": 45 },
-        { "id": "similarity", "name": "图形的相似", "grade": "初三", "module": "transform", "x": 1040, "y": 237.5, "w": 120, "h": 45,
-          "detail": { "core": ["相似图形对应角相等、对应边成比例", "相似比 k", "平行线分线段成比例", "相似判定 AA/SAS/SSS"],
-                      "commonErrors": ["把相似当全等、比例写反", "对应顶点顺序搞错导致比例式错误", "忽略相似比的方向"] } },
-        { "id": "data-collection", "name": "数据的收集与整理", "grade": "初一", "module": "probstat", "x": 1225, "y": 625, "w": 130, "h": 70,
-          "lines": ["数据的收集", "与整理"] },
-        { "id": "data-analysis", "name": "数据的分析", "grade": "初二", "module": "probstat", "x": 1220, "y": 337.5, "w": 140, "h": 45 },
-        { "id": "probability-advanced", "name": "概率的进一步认识", "grade": "初三", "module": "probstat", "x": 1205, "y": 237.5, "w": 170, "h": 45 }
+        { "id": "rational-numbers", "name": "有理数及其运算", "grade": "初一", "module": "number" },
+        { "id": "real-numbers", "name": "实数", "grade": "初一", "module": "number" },
+        { "id": "integer-add-sub", "name": "整式及其加减", "grade": "初一", "module": "expression" },
+        { "id": "integer-mul-div", "name": "整式的乘除", "grade": "初一", "module": "expression" },
+        { "id": "factorization", "name": "因式分解", "grade": "初二", "module": "expression" },
+        { "id": "fraction", "name": "分式", "grade": "初二", "module": "expression" },
+        { "id": "linear-equation-one", "name": "一元一次方程", "grade": "初一", "module": "equation" },
+        { "id": "linear-system", "name": "二元一次方程组", "grade": "初一", "module": "equation" },
+        { "id": "linear-inequality", "name": "一元一次不等式", "grade": "初一", "module": "equation" },
+        { "id": "fractional-equation", "name": "分式方程", "grade": "初二", "module": "equation" },
+        { "id": "quadratic-equation", "name": "一元二次方程", "grade": "初三", "module": "equation" },
+        { "id": "variable-relation", "name": "变量之间的关系", "grade": "初二", "module": "function" },
+        { "id": "linear-function", "name": "一次函数", "grade": "初二", "module": "function" },
+        { "id": "inverse-function", "name": "反比例函数", "grade": "初三", "module": "function" },
+        { "id": "quadratic-function", "name": "二次函数", "grade": "初三", "module": "function" },
+        { "id": "rich-graphics", "name": "丰富的图形世界", "grade": "初一", "module": "geometry" },
+        { "id": "basic-plane-figure", "name": "基本平面图形", "grade": "初一", "module": "geometry" },
+        { "id": "lines-angles", "name": "相交线与平行线", "grade": "初一", "module": "geometry" },
+        { "id": "triangle", "name": "三角形", "grade": "初二", "module": "geometry" },
+        { "id": "position-coordinate", "name": "位置与坐标", "grade": "初二", "module": "geometry" },
+        { "id": "pythagoras", "name": "勾股定理", "grade": "初二", "module": "geometry" },
+        { "id": "parallel-proof", "name": "平行线的证明", "grade": "初二", "module": "geometry" },
+        { "id": "triangle-proof", "name": "三角形的证明", "grade": "初二", "module": "geometry" },
+        { "id": "parallelogram", "name": "平行四边形", "grade": "初三", "module": "geometry" },
+        { "id": "rectangle", "name": "矩形", "grade": "初三", "module": "geometry" },
+        { "id": "rhombus", "name": "菱形", "grade": "初三", "module": "geometry" },
+        { "id": "square", "name": "正方形", "grade": "初三", "module": "geometry" },
+        { "id": "projection-view", "name": "投影与视图", "grade": "初三", "module": "geometry" },
+        { "id": "right-triangle-trig", "name": "直角三角形的边角关系", "grade": "初三", "module": "geometry" },
+        { "id": "circle", "name": "圆", "grade": "初三", "module": "geometry" },
+        { "id": "axis-symmetry", "name": "生活中的轴对称", "grade": "初二", "module": "transform" },
+        { "id": "translation-rotation", "name": "图形的平移与旋转", "grade": "初二", "module": "transform" },
+        { "id": "similarity", "name": "图形的相似", "grade": "初三", "module": "transform" },
+        { "id": "data-collection", "name": "数据的收集与整理", "grade": "初一", "module": "probstat" },
+        { "id": "data-analysis", "name": "数据的分析", "grade": "初二", "module": "probstat" },
+        { "id": "probability-advanced", "name": "概率的进一步认识", "grade": "初三", "module": "probstat" }
       ],
       "connections": [
-        { "from": "rational-numbers", "to": "real-numbers" },
-        { "from": "rational-numbers", "to": "integer-add-sub" },
-        { "from": "integer-add-sub", "to": "integer-mul-div" },
-        { "from": "integer-mul-div", "to": "factorization" },
-        { "from": "factorization", "to": "fraction" },
-        { "from": "integer-add-sub", "to": "linear-equation-one" },
-        { "from": "linear-equation-one", "to": "linear-system" },
-        { "from": "linear-equation-one", "to": "linear-inequality" },
-        { "from": "factorization", "to": "quadratic-equation" },
-        { "from": "linear-equation-one", "to": "quadratic-equation" },
-        { "from": "fraction", "to": "fractional-equation" },
-        { "from": "integer-add-sub", "to": "variable-relation" },
-        { "from": "variable-relation", "to": "linear-function" },
-        { "from": "linear-function", "to": "inverse-function" },
-        { "from": "linear-function", "to": "quadratic-function" },
-        { "from": "integer-add-sub", "to": "rich-graphics" },
-        { "from": "rich-graphics", "to": "basic-plane-figure" },
-        { "from": "basic-plane-figure", "to": "lines-angles" },
-        { "from": "lines-angles", "to": "parallel-proof" },
-        { "from": "basic-plane-figure", "to": "triangle" },
-        { "from": "triangle", "to": "triangle-proof" },
-        { "from": "triangle-proof", "to": "parallelogram" },
-        { "from": "parallelogram", "to": "special-parallelogram" },
-        { "from": "triangle", "to": "pythagoras" },
-        { "from": "pythagoras", "to": "right-triangle-trig" },
-        { "from": "special-parallelogram", "to": "circle" },
-        { "from": "special-parallelogram", "to": "similarity" },
-        { "from": "similarity", "to": "right-triangle-trig" },
-        { "from": "basic-plane-figure", "to": "translation-rotation" },
-        { "from": "translation-rotation", "to": "axis-symmetry" },
-        { "from": "translation-rotation", "to": "similarity" },
-        { "from": "basic-plane-figure", "to": "position-coordinate" },
-        { "from": "position-coordinate", "to": "pythagoras" },
-        { "from": "rich-graphics", "to": "projection-view" },
-        { "from": "data-collection", "to": "data-analysis" },
-        { "from": "data-analysis", "to": "probability-advanced" }
+        { "from": "rational-numbers", "to": "real-numbers", "kind": "prereq" },
+        { "from": "rational-numbers", "to": "integer-add-sub", "kind": "prereq" },
+        { "from": "integer-add-sub", "to": "integer-mul-div", "kind": "prereq" },
+        { "from": "integer-mul-div", "to": "factorization", "kind": "prereq" },
+        { "from": "factorization", "to": "fraction", "kind": "prereq" },
+        { "from": "integer-add-sub", "to": "linear-equation-one", "kind": "prereq" },
+        { "from": "linear-equation-one", "to": "linear-system", "kind": "prereq" },
+        { "from": "linear-equation-one", "to": "linear-inequality", "kind": "prereq" },
+        { "from": "factorization", "to": "quadratic-equation", "kind": "prereq" },
+        { "from": "linear-equation-one", "to": "quadratic-equation", "kind": "prereq" },
+        { "from": "fraction", "to": "fractional-equation", "kind": "prereq" },
+        { "from": "integer-add-sub", "to": "variable-relation", "kind": "prereq" },
+        { "from": "variable-relation", "to": "linear-function", "kind": "prereq" },
+        { "from": "linear-function", "to": "inverse-function", "kind": "prereq" },
+        { "from": "linear-function", "to": "quadratic-function", "kind": "prereq" },
+        { "from": "integer-add-sub", "to": "rich-graphics", "kind": "prereq" },
+        { "from": "rich-graphics", "to": "basic-plane-figure", "kind": "prereq" },
+        { "from": "basic-plane-figure", "to": "lines-angles", "kind": "prereq" },
+        { "from": "lines-angles", "to": "parallel-proof", "kind": "prereq" },
+        { "from": "basic-plane-figure", "to": "triangle", "kind": "prereq" },
+        { "from": "triangle", "to": "triangle-proof", "kind": "prereq" },
+        { "from": "triangle-proof", "to": "parallelogram", "kind": "prereq" },
+        { "from": "parallelogram", "to": "rectangle", "kind": "prereq" },
+        { "from": "parallelogram", "to": "rhombus", "kind": "prereq" },
+        { "from": "rectangle", "to": "square", "kind": "prereq" },
+        { "from": "rhombus", "to": "square", "kind": "prereq" },
+        { "from": "triangle", "to": "pythagoras", "kind": "prereq" },
+        { "from": "pythagoras", "to": "right-triangle-trig", "kind": "prereq" },
+        { "from": "triangle-proof", "to": "circle", "kind": "prereq" },
+        { "from": "translation-rotation", "to": "similarity", "kind": "prereq" },
+        { "from": "similarity", "to": "right-triangle-trig", "kind": "prereq" },
+        { "from": "basic-plane-figure", "to": "translation-rotation", "kind": "prereq" },
+        { "from": "translation-rotation", "to": "axis-symmetry", "kind": "prereq" },
+        { "from": "basic-plane-figure", "to": "position-coordinate", "kind": "prereq" },
+        { "from": "position-coordinate", "to": "pythagoras", "kind": "prereq" },
+        { "from": "rich-graphics", "to": "projection-view", "kind": "prereq" },
+        { "from": "data-collection", "to": "data-analysis", "kind": "prereq" },
+        { "from": "data-analysis", "to": "probability-advanced", "kind": "prereq" },
+
+        { "from": "rectangle", "to": "rhombus", "kind": "related" },
+        { "from": "triangle", "to": "similarity", "kind": "related" },
+        { "from": "circle", "to": "triangle", "kind": "related" },
+        { "from": "circle", "to": "pythagoras", "kind": "related" },
+        { "from": "quadratic-function", "to": "quadratic-equation", "kind": "related" },
+        { "from": "linear-function", "to": "linear-equation-one", "kind": "related" },
+        { "from": "position-coordinate", "to": "linear-function", "kind": "related" },
+        { "from": "similarity", "to": "right-triangle-trig", "kind": "related" },
+        { "from": "parallelogram", "to": "similarity", "kind": "related" },
+        { "from": "inverse-function", "to": "quadratic-function", "kind": "related" },
+        { "from": "square", "to": "circle", "kind": "related" }
       ]
     }
     </script>
 
-    <!-- ===================== App logic ===================== -->
     <script>
     (function () {
         "use strict";
         const SVGNS = "http://www.w3.org/2000/svg";
-        const STATE_KEY = "math-knowledge-graph-v1";
-        const VB_W = 1400, VB_H = 950;
+        const $ = (s, r) => (r || document).querySelector(s);
+        const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+        const el = (t, a) => { const e = document.createElementNS(SVGNS, t); if (a) for (const k in a) e.setAttribute(k, a[k]); return e; };
+        const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-        const rawData = JSON.parse(document.getElementById("graph-data").textContent);
-        let moduleMap = {};
-        rawData.modules.forEach(m => moduleMap[m.id] = m);
+        const rawData = JSON.parse($("#graph-data").textContent);
+        const moduleMap = {}; rawData.modules.forEach(m => moduleMap[m.id] = m);
 
         // ---- state ----
-        const state = {
-            mode: "browse",
-            selectedId: null,
-            selectedConn: null,
-            search: "",
-            searchSet: null
+        const STATE_KEY = "cz-knowledge-graph-v3";
+        const state = { mode: "browse", selectedId: null, selectedConn: null, search: "", grade: "all", modules: new Set(rawData.modules.map(m => m.id)), mastery: {} };
+
+        // node/conn mutable state
+        const nodeState = {};
+        const connState = {};
+        rawData.nodes.forEach(n => nodeState[n.id] = { x: 0, y: 0, w: n.w || 132, h: n.h || 50, dx: 0, dy: 0 });
+        rawData.connections.forEach((_, i) => connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 });
+
+        const nodeById = {}; rawData.nodes.forEach(n => nodeById[n.id] = n);
+        const prereqParents = {}; const prereqChildren = {}; const relatedOf = {};
+        rawData.nodes.forEach(n => { prereqParents[n.id] = []; prereqChildren[n.id] = []; relatedOf[n.id] = []; });
+        rawData.connections.forEach(c => {
+            if (c.kind === "prereq") { prereqParents[c.to].push(c.from); prereqChildren[c.from].push(c.to); }
+            else { relatedOf[c.from].push(c.to); relatedOf[c.to].push(c.from); }
+        });
+
+        // ---- node rich metadata (key nodes explicit; others defaulted) ----
+        const META = {
+            "factorization": { est: 40, freq: 5, level: "必会", typical: ["分解因式：x²−4x+4", "提公因式与公式法综合"], zhongkao: "近三年全国卷均出现，常与大题结合" },
+            "quadratic-equation": { est: 55, freq: 5, level: "必会", typical: ["用配方法解 x²−6x+5=0", "判别式判断根的情况"], zhongkao: "每年必考，约占 8–12 分" },
+            "linear-function": { est: 50, freq: 5, level: "必会", typical: ["求一次函数解析式", "图象与 k、b 的关系"], zhongkao: "高频，常与几何综合" },
+            "quadratic-function": { est: 70, freq: 5, level: "必会", typical: ["求顶点坐标与对称轴", "利润最值问题"], zhongkao: "压轴题常客，约占 10–14 分" },
+            "triangle": { est: 60, freq: 5, level: "必会", typical: ["全等三角形的判定", "等腰三角形性质"], zhongkao: "几何基石，贯穿全卷" },
+            "similarity": { est: 55, freq: 4, level: "必会", typical: ["相似三角形的判定", "影子测高"], zhongkao: "常与圆、函数综合" },
+            "circle": { est: 65, freq: 5, level: "必会", typical: ["圆周角定理", "切线长定理"], zhongkao: "压轴几何大题" },
+            "pythagoras": { est: 40, freq: 5, level: "必会", typical: ["已知两边求第三边", "勾股数应用"], zhongkao: "基础但极高频" },
+            "parallelogram": { est: 45, freq: 4, level: "必会", typical: ["判定与性质", "对角线互相平分"], zhongkao: "常与特殊平行四边形衔接" },
+            "rectangle": { est: 35, freq: 4, level: "必会", typical: ["矩形性质应用", "对角线相等"] },
+            "rhombus": { est: 35, freq: 4, level: "必会", typical: ["菱形对角线垂直", "面积=对角线乘积一半"] },
+            "square": { est: 30, freq: 4, level: "必会", typical: ["正方形既是矩形又是菱形"] },
+            "real-numbers": { est: 30, freq: 3, level: "理解", typical: ["无理数估算", "二次根式化简"] },
+            "inverse-function": { est: 40, freq: 3, level: "理解", typical: ["反比例函数图象与 k 的符号"] },
+            "right-triangle-trig": { est: 45, freq: 4, level: "必会", typical: ["sin/cos/tan 实际应用", "坡度问题"] },
+            "linear-equation-one": { est: 35, freq: 5, level: "必会", typical: ["移项与去括号", "配套问题"] }
         };
-        // per-node mutable state (offsets + size), per-conn state
-        const nodeState = {};   // id -> {dx, dy, w, h}
-        const connState = {};    // index -> {sx, sy, ex, ey, w, head}
-        rawData.nodes.forEach(n => { nodeState[n.id] = { dx: 0, dy: 0, w: n.w, h: n.h }; });
-        rawData.connections.forEach((_, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; });
+        function metaOf(id) {
+            if (META[id]) return META[id];
+            const n = nodeById[id];
+            const base = { "初一": 30, "初二": 42, "初三": 55 }[n.grade] || 40;
+            const f = ({ equation: 5, function: 5, geometry: 5, number: 3, expression: 4, transform: 3, probstat: 3 }[n.module] || 3);
+            return { est: base, freq: f, level: "理解", typical: ["（典型题待补充）"], zhongkao: "（中考数据待补充）" };
+        }
+        const stars = (n) => { let s = ""; for (let i = 1; i <= 5; i++) s += i <= n ? "★" : "<span class='off'>★</span>"; return s; };
 
-        // derived maps
-        let nodeById = {};
-        rawData.nodes.forEach(n => nodeById[n.id] = n);
-        let prereqs = {};   // id -> [fromIds]
-        let nexts = {};     // id -> [toIds]
-        rawData.nodes.forEach(n => { prereqs[n.id] = []; nexts[n.id] = []; });
-        rawData.connections.forEach(c => { prereqs[c.to].push(c.from); nexts[c.from].push(c.to); });
-
-        // ---- svg helpers ----
-        const svg = document.getElementById("graph");
-        function el(tag, attrs) {
-            const e = document.createElementNS(SVGNS, tag);
-            if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
-            return e;
-        }
-        function svgScale() {
-            return svg.getBoundingClientRect().width / VB_W;
-        }
-        function toSvg(clientX, clientY) {
-            const pt = svg.createSVGPoint();
-            pt.x = clientX; pt.y = clientY;
-            return pt.matrixTransform(svg.getScreenCTM().inverse());
-        }
-        function nodeBox(id) {
-            const n = nodeById[id], s = nodeState[id];
-            const x = n.x + s.dx, y = n.y + s.dy, w = s.w, h = s.h;
-            return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
-        }
-        function anchor(box, side) {
-            if (side === "top") return { x: box.cx, y: box.y };
-            if (side === "bottom") return { x: box.cx, y: box.y + box.h };
-            if (side === "left") return { x: box.x, y: box.cy };
-            return { x: box.x + box.w, y: box.cy };
-        }
-        function closestSide(p, box) {
-            const sides = ["top", "bottom", "left", "right"].map(s => ({ s, p: anchor(box, s) }));
-            sides.sort((a, b) => (Math.hypot(a.p.x - p.x, a.p.y - p.y) - Math.hypot(b.p.x - p.x, b.p.y - p.y)));
-            return sides[0].s;
-        }
-
-        // ---- text wrapping ----
-        function nodeLines(n) {
-            if (n.lines) return n.lines;
-            const name = n.name;
-            if (name.length <= 7) return [name];
-            const mid = Math.ceil(name.length / 2);
-            return [name.slice(0, mid), name.slice(mid)];
-        }
-
-        // ---- persistence ----
-        function saveState() {
-            const out = { nodes: {}, conns: {} };
-            rawData.nodes.forEach(n => {
-                const s = nodeState[n.id];
-                out.nodes[n.id] = { dx: s.dx, dy: s.dy, w: s.w, h: s.h, name: n.name };
-            });
-            rawData.connections.forEach((_, i) => { out.conns[i] = connState[i]; });
-            try { localStorage.setItem(STATE_KEY, JSON.stringify(out)); } catch (e) {}
-        }
-        function loadState() {
-            try {
-                const raw = localStorage.getItem(STATE_KEY);
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                Object.keys(data.nodes || {}).forEach(id => {
-                    if (!nodeById[id]) return;
-                    const s = nodeState[id], d = data.nodes[id];
-                    s.dx = d.dx || 0; s.dy = d.dy || 0; s.w = d.w || nodeById[id].w; s.h = d.h || nodeById[id].h;
-                    if (typeof d.name === "string") nodeById[id].name = d.name;
+        // ---------- force-directed layout ----------
+        let VB = { x: 0, y: 0, w: 1400, h: 1040 };
+        function forceLayout() {
+            const W = 1400, H = 1040, cx = W / 2, cy = H / 2;
+            const mods = rawData.modules, R = 360;
+            const anchors = {};
+            mods.forEach((m, i) => { const a = (i / mods.length) * Math.PI * 2 - Math.PI / 2; anchors[m.id] = { x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R }; });
+            const nodes = rawData.nodes, pos = {}, vel = {};
+            nodes.forEach((n, i) => { const an = anchors[n.module]; pos[n.id] = { x: an.x + Math.cos(i * 2.3) * 46, y: an.y + Math.sin(i * 1.7) * 46 }; vel[n.id] = { x: 0, y: 0 }; });
+            const E = rawData.connections;
+            for (let it = 0; it < 520; it++) {
+                const f = {}; nodes.forEach(n => f[n.id] = { x: 0, y: 0 });
+                for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i].id, b = nodes[j].id;
+                    let dx = pos[a].x - pos[b].x, dy = pos[a].y - pos[b].y;
+                    let d2 = dx * dx + dy * dy + 0.5, d = Math.sqrt(d2), ff = 8200 / d2;
+                    let fx = dx / d * ff, fy = dy / d * ff;
+                    f[a].x += fx; f[a].y += fy; f[b].x -= fx; f[b].y -= fy;
+                }
+                E.forEach(e => {
+                    const A = pos[e.from], B = pos[e.to];
+                    let dx = B.x - A.x, dy = B.y - A.y, d = Math.sqrt(dx * dx + dy * dy) + 0.5;
+                    let rest = e.kind === "related" ? 200 : 165, k = (d - rest) * 0.02;
+                    let fx = dx / d * k, fy = dy / d * k;
+                    f[e.from].x += fx; f[e.from].y += fy; f[e.to].x -= fx; f[e.to].y -= fy;
                 });
-                Object.keys(data.conns || {}).forEach(i => { if (connState[i]) connState[i] = Object.assign(connState[i], data.conns[i]); });
-            } catch (e) { console.warn("读取本地状态失败", e); }
+                nodes.forEach(n => {
+                    const an = anchors[n.module];
+                    f[n.id].x += (an.x - pos[n.id].x) * 0.016 + (cx - pos[n.id].x) * 0.0022;
+                    f[n.id].y += (an.y - pos[n.id].y) * 0.016 + (cy - pos[n.id].y) * 0.0022;
+                });
+                const damp = 0.86;
+                nodes.forEach(n => { vel[n.id].x = (vel[n.id].x + f[n.id].x) * damp; vel[n.id].y = (vel[n.id].y + f[n.id].y) * damp; pos[n.id].x += vel[n.id].x; pos[n.id].y += vel[n.id].y; });
+            }
+            let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+            nodes.forEach(n => {
+                const w = nodeState[n.id].w, h = nodeState[n.id].h;
+                const x = pos[n.id].x - w / 2, y = pos[n.id].y - h / 2;
+                nodeState[n.id].x = x; nodeState[n.id].y = y;
+                minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x + w); maxY = Math.max(maxY, y + h);
+            });
+            const pad = 70; VB = { x: minX - pad, y: minY - pad, w: (maxX - minX) + pad * 2, h: (maxY - minY) + pad * 2 };
         }
 
-        // ---- render ----
+        const nodeBox = (id) => { const s = nodeState[id]; return { x: s.x, y: s.y, w: s.w, h: s.h, cx: s.x + s.w / 2, cy: s.y + s.h / 2 }; };
+
+        // ---------- rendering ----------
+        const svg = $("#graph");
+        const detailPanel = $("#detail-panel");
         let nodeEls = {}, connEls = [], handleGroup = null, resizeHandle = null;
-        let dragHandle = null, dragResize = null;
 
         function renderGraph() {
-            // defs
-            svg.innerHTML = "";
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
             const defs = el("defs");
-            const marker = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" });
-            marker.appendChild(el("path", { d: "M0,0 L10,5 L0,10 z", fill: "#94a3b8" }));
-            defs.appendChild(marker);
+            defs.innerHTML = '<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"></path></marker>' +
+                '<marker id="arrow-lit" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#818cf8"></path></marker>';
             svg.appendChild(defs);
+            svg.setAttribute("viewBox", `${VB.x} ${VB.y} ${VB.w} ${VB.h}`);
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-            // background grid
-            const bg = el("g");
-            for (let x = 0; x <= VB_W; x += 50) bg.appendChild(el("line", { x1: x, y1: 0, x2: x, y2: VB_H, stroke: "#eef2f7", "stroke-width": 1 }));
-            for (let y = 0; y <= VB_H; y += 50) bg.appendChild(el("line", { x1: 0, y1: y, x2: VB_W, y2: y, stroke: "#eef2f7", "stroke-width": 1 }));
-            svg.appendChild(bg);
-
-            // module bands + labels
-            const modG = el("g");
+            // module bands (soft halos behind clusters)
             rawData.modules.forEach(m => {
-                const ns = rawData.nodes.filter(n => n.module === m.id);
+                const ns = rawData.nodes.filter(n => n.module === m.id).map(n => nodeBox(n.id));
                 if (!ns.length) return;
-                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-                ns.forEach(n => { const b = nodeBox(n.id); minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x + b.w); minY = Math.min(minY, b.y); maxY = Math.max(maxY, b.y + b.h); });
-                const pad = 22;
-                modG.appendChild(el("rect", { x: minX - pad, y: minY - pad, width: (maxX - minX) + pad * 2, height: (maxY - minY) + pad * 2, rx: 18, fill: m.color, "fill-opacity": 0.14 }));
-                const lbl = el("text", { x: minX - pad + 14, y: minY - pad + 22, "font-size": 16, "font-weight": 700, fill: "#475569" });
-                lbl.textContent = m.name;
-                modG.appendChild(lbl);
+                let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+                ns.forEach(b => { minX = Math.min(minX, b.x); minY = Math.min(minY, b.y); maxX = Math.max(maxX, b.x + b.w); maxY = Math.max(maxY, b.y + b.h); });
+                const g = el("g", { opacity: 0.5 });
+                g.appendChild(el("rect", { x: minX - 40, y: minY - 34, width: (maxX - minX) + 80, height: (maxY - minY) + 74, rx: 26, fill: m.color, "fill-opacity": 0.05, stroke: m.color, "stroke-opacity": 0.18, "stroke-width": 1.5 }));
+                const lab = el("text", { x: minX - 24, y: minY - 14, class: "band-label", fill: m.color });
+                lab.textContent = m.name;
+                g.appendChild(lab);
+                svg.appendChild(g);
             });
-            svg.appendChild(modG);
 
-            // connections
-            const connG = el("g");
+            // connections (bezier)
             connEls = [];
             rawData.connections.forEach((c, i) => {
-                const line = el("line", { class: "conn", "marker-end": "url(#arrow)" });
-                line.dataset.index = i;
-                connG.appendChild(line);
-                connEls.push({ c, line, index: i });
+                const A = nodeBox(c.from), B = nodeBox(c.to);
+                const path = el("path", { class: "conn" + (c.kind === "related" ? " related" : ""), "marker-end": "url(#arrow)" });
+                path.dataset.index = i;
+                svg.appendChild(path);
+                connEls.push(path);
+                path.addEventListener("click", (e) => { e.stopPropagation(); selectConn(i); });
             });
-            svg.appendChild(connG);
 
             // nodes
-            const nodeG = el("g");
             nodeEls = {};
             rawData.nodes.forEach(n => {
+                const b = nodeBox(n.id), m = moduleMap[n.module];
                 const g = el("g", { class: "node", "data-id": n.id });
-                const b = nodeBox(n.id);
-                const rect = el("rect", { x: n.x, y: n.y, width: b.w, height: b.h, rx: 12, ry: 12, fill: moduleMap[n.module].color, stroke: "#cbd5e1", "stroke-width": 1 });
+                const rect = el("rect", { x: b.x, y: b.y, width: b.w, height: b.h, rx: 13, fill: "#fff", stroke: m.color, "stroke-width": 1.6 });
+                rect.setAttribute("filter", "");
                 g.appendChild(rect);
-                const text = el("text", { "text-anchor": "middle", "dominant-baseline": "central", "font-size": 15, "font-weight": 600, fill: "#1f2937" });
+                const text = el("text", { x: b.cx, y: b.cy, "text-anchor": "middle", "dominant-baseline": "central" });
+                text.textContent = n.name;
                 g.appendChild(text);
-                drawNodeText(text, n, b);
-                nodeG.appendChild(g);
+                // status dot
+                const st = state.mastery[n.id] || 0;
+                const dot = el("circle", { class: "status-dot", cx: b.x + b.w - 12, cy: b.y + 12, r: 6, fill: ["var(--status-none)", "var(--status-doing)", "var(--status-done)"][st], stroke: "#fff", "stroke-width": 2 });
+                dot.style.cursor = "pointer";
+                dot.addEventListener("click", (e) => { e.stopPropagation(); cycleMastery(n.id); });
+                g.appendChild(dot);
+                g.addEventListener("click", (e) => { e.stopPropagation(); onNodeClick(n.id); });
+                g.addEventListener("dblclick", (e) => { e.stopPropagation(); if (state.mode === "edit") editText(n.id); });
+                svg.appendChild(g);
                 nodeEls[n.id] = g;
-                attachNodeEvents(g, n, rect, text);
+                setupNodeDrag(g, n.id);
             });
-            svg.appendChild(nodeG);
 
-            // handles overlay
-            handleGroup = el("g");
-            const h1 = el("circle", { class: "arrow-handle", r: 7, "data-handle": "start" });
-            const h2 = el("circle", { class: "arrow-handle", r: 7, "data-handle": "end" });
-            handleGroup.appendChild(h1); handleGroup.appendChild(h2);
-            svg.appendChild(handleGroup);
-            resizeHandle = el("rect", { class: "resize-handle", width: 12, height: 12, rx: 2 });
-            svg.appendChild(resizeHandle);
-            attachHandleListeners();
-
-            updateConnections();
+            // edit handles
+            if (state.mode === "edit") {
+                handleGroup = el("g", {}); svg.appendChild(handleGroup);
+                resizeHandle = el("rect", { class: "resize-handle", width: 12, height: 12, rx: 2, style: "display:none" });
+                svg.appendChild(resizeHandle);
+                bindEditHandles();
+            }
             applySelectionVisual();
+            applyFilterVisual();
+            updateConnections();
         }
 
-        function drawNodeText(textEl, n, b) {
-            textEl.textContent = "";
-            const lines = nodeLines(n);
-            const fs = lines.length > 1 ? 13 : 15;
-            textEl.setAttribute("font-size", fs);
-            const startDy = lines.length === 1 ? 0 : -9;
-            lines.forEach((ln, i) => {
-                const ts = el("tspan", { x: b.cx, dy: i === 0 ? startDy : 18 });
-                ts.textContent = ln;
-                textEl.appendChild(ts);
-            });
-            textEl.setAttribute("x", b.cx);
-            textEl.setAttribute("y", b.cy);
+        function bezierPath(A, B) {
+            const mx = (A.cx + B.cx) / 2, my = (A.cy + B.cy) / 2;
+            const dx = B.cx - A.cx, dy = B.cy - A.cy, len = Math.hypot(dx, dy) || 1;
+            const nx = -dy / len, ny = dx / len;
+            const off = Math.min(60, len * 0.22);
+            const c1x = A.cx + dx * 0.25 + nx * off, c1y = A.cy + dy * 0.25 + ny * off;
+            const c2x = A.cx + dx * 0.75 + nx * off, c2y = A.cy + dy * 0.75 + ny * off;
+            return `M ${A.cx} ${A.cy} C ${c1x} ${c1y} ${c2x} ${c2y} ${B.cx} ${B.cy}`;
         }
-
         function updateConnections() {
-            connEls.forEach(({ c, line, index }) => {
-                const cs = connState[index];
-                const fb = nodeBox(c.from), tb = nodeBox(c.to);
-                const start = anchor(fb, closestSide({ x: tb.cx, y: tb.cy }, fb));
-                const end = anchor(tb, closestSide({ x: fb.cx, y: fb.cy }, tb));
-                line.setAttribute("x1", start.x + cs.sx);
-                line.setAttribute("y1", start.y + cs.sy);
-                line.setAttribute("x2", end.x + cs.ex);
-                line.setAttribute("y2", end.y + cs.ey);
-                line.setAttribute("stroke-width", cs.w);
+            rawData.connections.forEach((c, i) => {
+                const A = nodeBox(c.from), B = nodeBox(c.to);
+                const p = connEls[i];
+                if (!p) return;
+                p.setAttribute("d", bezierPath(A, B));
             });
-            if (state.selectedConn !== null) positionArrowHandles();
-            if (state.selectedId) positionResizeHandle();
+            if (handleGroup && state.selectedConn !== null) positionConnHandles();
+            if (resizeHandle) positionResizeHandle();
         }
 
-        // ---- selection visuals ----
+        function setupNodeDrag(g, id) {
+            g.addEventListener("pointerdown", (e) => {
+                if (state.mode !== "edit") return;
+                if (e.target.classList.contains("status-dot")) return;
+                e.stopPropagation();
+                const start = clientToSvg(e.clientX, e.clientY);
+                const b = nodeBox(id);
+                const ox = start.x - b.x, oy = start.y - b.y;
+                g.setPointerCapture(e.pointerId);
+                const move = (ev) => {
+                    const p = clientToSvg(ev.clientX, ev.clientY);
+                    nodeState[id].x = p.x - ox; nodeState[id].y = p.y - oy;
+                    const box = nodeBox(id);
+                    g.querySelector("rect").setAttribute("x", box.x); g.querySelector("rect").setAttribute("y", box.y);
+                    g.querySelector("text").setAttribute("x", box.cx); g.querySelector("text").setAttribute("y", box.cy);
+                    const dot = g.querySelector(".status-dot"); if (dot) { dot.setAttribute("cx", box.x + box.w - 12); dot.setAttribute("cy", box.y + 12); }
+                    updateConnections();
+                };
+                const up = () => { g.removeEventListener("pointermove", move); g.removeEventListener("pointerup", up); saveState(); };
+                g.addEventListener("pointermove", move); g.addEventListener("pointerup", up);
+            });
+        }
+
+        const svgScale = () => { const r = svg.getBoundingClientRect(); return r.width / VB.w; };
+        function clientToSvg(cx, cy) {
+            const r = svg.getBoundingClientRect();
+            return { x: (cx - r.left) / r.width * VB.w + VB.x, y: (cy - r.top) / r.height * VB.h + VB.y };
+        }
+
+        // ---------- selection / detail ----------
+        function onNodeClick(id) {
+            state.selectedId = id; state.selectedConn = null;
+            applySelectionVisual();
+            renderDetail(id);
+            if (state.mode === "browse") animatePath(id);
+        }
+        function selectConn(i) {
+            state.selectedConn = i; state.selectedId = null;
+            applySelectionVisual();
+            const c = rawData.connections[i];
+            detailPanel.innerHTML = `<div class="d-section"><h4>知识关系</h4><p style="font-size:14px;line-height:1.7">「${esc(nodeById[c.from].name)}」 ${c.kind === "prereq" ? "<b>是</b> 「" + esc(nodeById[c.to].name) + "」的<b>前置依赖</b>" : "与「" + esc(nodeById[c.to].name) + "」存在<b>横向关联</b>"}。</p></div>` +
+                `<div class="ai-box">${aiBoxHtml(c.to)}</div>`;
+        }
+
+        function ancestorsOf(id) {
+            const set = new Set(); const stack = [id];
+            while (stack.length) { const cur = stack.pop(); prereqParents[cur].forEach(p => { if (!set.has(p)) { set.add(p); stack.push(p); } }); }
+            return set;
+        }
+        function pathOrder(id) {
+            const anc = ancestorsOf(id); anc.add(id);
+            const ordered = []; const done = new Set();
+            while (ordered.length < anc.size) {
+                let added = false;
+                anc.forEach(n => {
+                    if (done.has(n)) return;
+                    if (prereqParents[n].every(p => !anc.has(p) || done.has(p))) { ordered.push(n); done.add(n); added = true; }
+                });
+                if (!added) break;
+            }
+            return ordered;
+        }
+
+        function renderDetail(id) {
+            const n = nodeById[id], m = moduleMap[n.module], meta = metaOf(id);
+            const pres = prereqParents[id].map(pid => chip(pid, nodeById[pid].name)).join("") || "<span style='color:var(--muted)'>无（基础起点）</span>";
+            const nexts = prereqChildren[id].map(cid => chip(cid, nodeById[cid].name)).join("") || "<span style='color:var(--muted)'>无（终端知识）</span>";
+            const rels = relatedOf[id].map(rid => chip(rid, nodeById[rid].name)).join("") || "<span style='color:var(--muted)'>无</span>";
+            const st = state.mastery[id] || 0;
+            const order = pathOrder(id);
+            const pathHtml = order.map((pid, i) => `<div class="path-step ${i < order.indexOf(id) ? "done" : ""}"><span class="num">${i + 1}</span><span>${esc(nodeById[pid].name)}</span>${i < order.length - 1 ? "<span class='path-arrow'>↓</span>" : ""}</div>`).join("");
+
+            detailPanel.innerHTML = `
+                <div><span class="d-grade">${esc(n.grade)}</span><span class="d-module" style="background:${m.color}22;color:${m.color}">${esc(m.name)}</span></div>
+                <div class="d-name">${esc(n.name)}</div>
+                <div class="status-row" style="margin-top:10px;">
+                    <span style="font-size:12.5px;color:var(--muted)">掌握状态</span>
+                    <span class="status-dot-btn sd-none" data-st="0"></span>
+                    <span class="status-dot-btn sd-doing" data-st="1"></span>
+                    <span class="status-dot-btn sd-done" data-st="2"></span>
+                    <span id="st-text" style="font-size:12px;color:var(--muted);margin-left:4px;">${["未学", "学习中", "已掌握"][st]}</span>
+                </div>
+                <div class="d-section"><h4>核心指标</h4>
+                    <div class="meta-grid">
+                        <div class="meta-card"><div class="k">预计学习时间</div><div class="v">${meta.est} 分钟</div></div>
+                        <div class="meta-card"><div class="k">考试频率</div><div class="v stars">${stars(meta.freq)}</div></div>
+                        <div class="meta-card"><div class="k">推荐掌握程度</div><div class="v">${meta.level}</div></div>
+                        <div class="meta-card"><div class="k">所属年级</div><div class="v">${esc(n.grade)}</div></div>
+                    </div>
+                </div>
+                <div class="d-section"><h4>👣 推荐学习路径</h4><div class="path-card">${pathHtml}</div></div>
+                <div class="d-section"><h4>前置依赖</h4><div class="chips">${pres}</div></div>
+                <div class="d-section"><h4>后续关联</h4><div class="chips">${nexts}</div></div>
+                <div class="d-section"><h4>横向关联</h4><div class="chips">${rels}</div></div>
+                <div class="d-section"><h4>典型题</h4><ul class="clean">${meta.typical.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>
+                <div class="d-section"><h4>近三年中考</h4><p style="font-size:13.5px;line-height:1.7;color:#374151">${esc(meta.zhongkao)}</p></div>
+                <div class="d-section"><h4>延伸资源</h4>
+                    <div class="chips">
+                        <span class="chip">🎬 学习视频</span>
+                        <span class="chip">📄 相关文章</span>
+                        <span class="chip">🤖 AI 生成练习</span>
+                    </div>
+                </div>
+                <div class="ai-box">${aiBoxHtml(id)}</div>
+            `;
+            $$("#detail-panel .status-dot-btn").forEach(b => b.addEventListener("click", () => setMastery(id, +b.dataset.st)));
+            $$("#detail-panel .chip").forEach(c => c.addEventListener("click", () => { const tid = c.dataset.id; if (tid) { state.selectedId = tid; applySelectionVisual(); renderDetail(tid); if (state.mode === "browse") animatePath(tid); centerOn(tid); } }));
+            bindAi(id);
+            if (state.mode === "edit") detailPanel.insertAdjacentHTML("beforeend", '<div class="hint-note" style="margin-top:14px;font-size:12px;color:var(--muted)">编辑模式：双击节点改字；拖动调整位置；选中后拖右下角缩放。</div>');
+        }
+        const chip = (id, name) => `<span class="chip" data-id="${id}">${esc(name)}</span>`;
+
+        // ---------- path animation ----------
+        function animatePath(id) {
+            const anc = ancestorsOf(id); anc.add(id);
+            const order = pathOrder(id);
+            const idxInOrder = {}; order.forEach((n, i) => idxInOrder[n] = i);
+            const litEdges = new Set();
+            rawData.connections.forEach((c, i) => { if (c.kind === "prereq" && anc.has(c.from) && anc.has(c.to)) litEdges.add(i); });
+            connEls.forEach((p, i) => {
+                p.classList.remove("lit"); p.setAttribute("marker-end", "url(#arrow)");
+                if (!litEdges.has(i)) return;
+                const delay = (idxInOrder[c_from(i)] || 0) * 130;
+                setTimeout(() => { if (litEdges.has(i)) { p.classList.add("lit"); p.setAttribute("marker-end", "url(#arrow-lit)"); } }, delay);
+            });
+        }
+        const c_from = (i) => rawData.connections[i].from;
+
         function applySelectionVisual() {
-            Object.keys(nodeEls).forEach(id => nodeEls[id].classList.toggle("selected", id === state.selectedId));
-            connEls.forEach(({ line, index }) => line.classList.toggle("sel", index === state.selectedConn));
-            positionArrowHandles();
-            positionResizeHandle();
-        }
-        function positionArrowHandles() {
-            if (state.selectedConn === null) { handleGroup.style.display = "none"; return; }
-            if (state.mode !== "edit") { handleGroup.style.display = "none"; return; }
-            handleGroup.style.display = "block";
-            const { line } = connEls[state.selectedConn];
-            const hs = handleGroup.children;
-            hs[0].setAttribute("cx", line.getAttribute("x1")); hs[0].setAttribute("cy", line.getAttribute("y1"));
-            hs[1].setAttribute("cx", line.getAttribute("x2")); hs[1].setAttribute("cy", line.getAttribute("y2"));
-        }
-        function positionResizeHandle() {
-            if (!state.selectedId || state.mode !== "edit") { resizeHandle.style.display = "none"; return; }
-            const b = nodeBox(state.selectedId);
-            resizeHandle.style.display = "block";
-            resizeHandle.setAttribute("x", b.x + b.w - 6);
-            resizeHandle.setAttribute("y", b.y + b.h - 6);
+            rawData.nodes.forEach(n => { const g = nodeEls[n.id]; if (!g) return; g.classList.toggle("sel", n.id === state.selectedId); });
         }
 
-        function attachHandleListeners() {
+        // ---------- filtering / search visual ----------
+        function applyFilterVisual() {
+            const searchSet = state.search ? ancestorsOf(matchId(state.search)).add(matchId(state.search)) : null;
+            rawData.nodes.forEach(n => {
+                const g = nodeEls[n.id]; if (!g) return;
+                let show = state.modules.has(n.module) && (state.grade === "all" || n.grade === state.grade);
+                let dim = !show;
+                if (searchSet) dim = !searchSet.has(n.id);
+                else if (!show) dim = true;
+                g.classList.toggle("dim", dim);
+                g.classList.toggle("hit", !!searchSet && searchSet.has(n.id));
+            });
+            connEls.forEach((p, i) => {
+                const c = rawData.connections[i];
+                const hide = !(state.modules.has(nodeById[c.from].module) && state.modules.has(nodeById[c.to].module));
+                const dim = hide || (searchSet ? !(searchSet.has(c.from) && searchSet.has(c.to)) : false);
+                p.classList.toggle("dim", dim);
+            });
+        }
+        function matchId(q) { q = q.trim(); if (!q) return null; const hit = rawData.nodes.find(n => n.name.includes(q)); return hit ? hit.id : null; }
+
+        // ---------- mastery ----------
+        function loadMastery() { try { const s = JSON.parse(localStorage.getItem(STATE_KEY) || "{}"); if (s.mastery) state.mastery = s.mastery; } catch (e) {} }
+        function setMastery(id, v) { state.mastery[id] = v; const dot = nodeEls[id] && nodeEls[id].querySelector(".status-dot"); if (dot) dot.setAttribute("fill", ["var(--status-none)", "var(--status-doing)", "var(--status-done)"][v]); updateMasteryBar(); saveState(); if (state.selectedId === id) renderDetail(id); }
+        function cycleMastery(id) { const v = ((state.mastery[id] || 0) + 1) % 3; setMastery(id, v); }
+        function updateMasteryBar() {
+            const total = rawData.nodes.length, done = rawData.nodes.filter(n => (state.mastery[n.id] || 0) === 2).length;
+            const pct = Math.round(done / total * 100);
+            $("#mastery-fill").style.width = pct + "%";
+            $("#mastery-label").textContent = "掌握 " + pct + "%";
+        }
+
+        // ---------- AI chat (demo) ----------
+        function aiBoxHtml(id) {
+            return `<div class="ai-head"><span class="ava">🤖</span> 数学助教</div>
+                <div class="ai-msgs" id="ai-msgs-${id}">
+                    <div class="ai-msg bot">你好，我是数学助教 👋 关于「${esc(nodeById[id].name)}」有什么不会的？可以问我，或点下面的快捷问题。</div>
+                </div>
+                <div class="ai-quick">
+                    <button data-q="用更简单的话解释">简单解释</button>
+                    <button data-q="给我一个生活化的例子">生活例子</button>
+                    <button data-q="出一道基础题">来道题</button>
+                    <button data-q="它和相近知识点有什么区别">对比相近</button>
+                </div>
+                <div class="ai-input"><input placeholder="问点什么…" id="ai-input-${id}"><button id="ai-send-${id}">发送</button></div>`;
+        }
+        const AI_REPLY = {
+            "用更简单的话解释": (n) => `「${n.name}」说白了就是：${simpleOf(n.id)}`,
+            "给我一个生活化的例子": (n) => `生活例子：${lifeOf(n.id)}`,
+            "出一道基础题": (n) => `来一道题：${metaOf(n.id).typical[0]}（先自己试试，再看前面的典型题解析～）`,
+            "它和相近知识点有什么区别": (n) => `区别：${compareOf(n.id)}`
+        };
+        function simpleOf(id) { const m = { "quadratic-equation": "一个带 x² 的方程，解它能找到使等式成立的 x", "linear-function": "一个量随另一个量均匀变化的关系，画出来是一条直线", "triangle": "三条线段围成的图形，是最基础的平面图形", "circle": "到定点距离相等的所有点组成的封闭曲线", "factorization": "把多项式写成几个整式相乘，相当于整式的『因式分解』", "pythagoras": "直角三角形中，两直角边的平方和等于斜边的平方" }; return m[id] || "它是初中数学里一个需要理解并熟练运用的核心概念。"; }
+        function lifeOf(id) { const m = { "quadratic-equation": "投篮抛物线、拱桥形状都和二次函数/方程有关", "linear-function": "打车计费：起步价 + 每公里单价×里程，就是一次函数", "triangle": "三脚架、自行车车架都利用三角形稳定性", "circle": "车轮、井盖做成圆形，因为圆上每点到中心距离相等", "pythagoras": "量一下楼梯的水平和垂直长度，就能算出斜边长" }; return m[id] || "生活中很多现象都能用它来解释。"; }
+        function compareOf(id) { const m = { "quadratic-function": "和「一元二次方程」不同：方程是求某个具体的 x，函数是研究 x 变化时 y 怎么变（一条曲线）。", "linear-function": "和「反比例函数」不同：一次函数是直线、均匀变化；反比例是双曲线、越靠近轴变化越快。", "rectangle": "矩形和菱形都是特殊平行四边形：矩形四个角是直角，菱形四条边相等；正方形两者都是。", "triangle": "和「相似图形」不同：三角形是具体图形，相似是图形之间的比例关系。" }; return m[id] || "它和相邻知识点既有联系也有区别，建议结合「横向关联」一起看。"; }
+        function bindAi(id) {
+            const box = $(`#ai-msgs-${id}`); if (!box) return;
+            const send = () => {
+                const inp = $(`#ai-input-${id}`); const q = inp.value.trim(); if (!q) return;
+                box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`);
+                inp.value = "";
+                setTimeout(() => {
+                    let reply;
+                    if (AI_REPLY[q]) reply = AI_REPLY[q](nodeById[id]);
+                    else if (window.CZ_AI_ENDPOINT) { reply = "（已接入真实 API，正在生成…）"; }
+                    else reply = `关于「${nodeById[id].name}」，我的理解是：${simpleOf(id)}。你可以问「生活例子」「来道题」或「对比相近」。`;
+                    box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(reply)}</div>`);
+                    box.scrollTop = box.scrollHeight;
+                }, 350);
+            };
+            $(`#ai-send-${id}`).addEventListener("click", send);
+            $(`#ai-input-${id}`).addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+            $$(`#detail-panel .ai-quick button`).forEach(b => b.addEventListener("click", () => {
+                const q = b.dataset.q; const box2 = $(`#ai-msgs-${id}`);
+                box2.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`);
+                setTimeout(() => { box2.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`); box2.scrollTop = box2.scrollHeight; }, 300);
+            }));
+        }
+
+        // ---------- edit handles ----------
+        function bindEditHandles() {
+            let dragHandle = null;
             handleGroup.addEventListener("pointerdown", (e) => {
                 if (state.mode !== "edit" || state.selectedConn === null) return;
                 dragHandle = { which: e.target.dataset.handle, x: e.clientX, y: e.clientY, cs: Object.assign({}, connState[state.selectedConn]) };
@@ -783,14 +888,14 @@
             });
             handleGroup.addEventListener("pointermove", (e) => {
                 if (!dragHandle) return;
-                const dx = (e.clientX - dragHandle.x) / svgScale();
-                const dy = (e.clientY - dragHandle.y) / svgScale();
+                const dx = (e.clientX - dragHandle.x) / svgScale(), dy = (e.clientY - dragHandle.y) / svgScale();
                 const cs = connState[state.selectedConn];
                 if (dragHandle.which === "start") { cs.sx = dragHandle.cs.sx + dx; cs.sy = dragHandle.cs.sy + dy; }
                 else { cs.ex = dragHandle.cs.ex + dx; cs.ey = dragHandle.cs.ey + dy; }
                 updateConnections();
             });
             handleGroup.addEventListener("pointerup", () => { if (dragHandle) { dragHandle = null; saveState(); } });
+            let dragResize = null;
             resizeHandle.addEventListener("pointerdown", (e) => {
                 if (state.mode !== "edit" || !state.selectedId) return;
                 dragResize = { x: e.clientX, y: e.clientY, w: nodeState[state.selectedId].w, h: nodeState[state.selectedId].h };
@@ -798,537 +903,219 @@
             });
             resizeHandle.addEventListener("pointermove", (e) => {
                 if (!dragResize) return;
-                const dx = (e.clientX - dragResize.x) / svgScale();
-                const dy = (e.clientY - dragResize.y) / svgScale();
+                const dx = (e.clientX - dragResize.x) / svgScale(), dy = (e.clientY - dragResize.y) / svgScale();
                 const s = nodeState[state.selectedId];
-                s.w = Math.max(60, dragResize.w + dx); s.h = Math.max(32, dragResize.h + dy);
-                const g = nodeEls[state.selectedId];
-                const rect = g.querySelector("rect"); rect.setAttribute("width", s.w); rect.setAttribute("height", s.h);
-                drawNodeText(g.querySelector("text"), nodeById[state.selectedId], nodeBox(state.selectedId));
+                s.w = Math.max(90, dragResize.w + dx); s.h = Math.max(38, dragResize.h + dy);
+                const g = nodeEls[state.selectedId], box = nodeBox(state.selectedId);
+                g.querySelector("rect").setAttribute("width", s.w); g.querySelector("rect").setAttribute("height", s.h);
+                g.querySelector("text").setAttribute("x", box.cx); g.querySelector("text").setAttribute("y", box.cy);
+                const dot = g.querySelector(".status-dot"); if (dot) { dot.setAttribute("cx", box.x + box.w - 12); dot.setAttribute("cy", box.y + 12); }
                 updateConnections();
             });
             resizeHandle.addEventListener("pointerup", () => { if (dragResize) { dragResize = null; saveState(); } });
         }
-
-        // ---- events: nodes ----
-        function attachNodeEvents(g, n, rect, text) {
-            let pd = null;
-            g.addEventListener("pointerdown", (e) => {
-                if (state.mode !== "edit") return;
-                pd = { x: e.clientX, y: e.clientY, dx: nodeState[n.id].dx, dy: nodeState[n.id].dy, moved: false };
-                g.setPointerCapture(e.pointerId);
-            });
-            g.addEventListener("pointermove", (e) => {
-                if (!pd) return;
-                const dx = (e.clientX - pd.x) / svgScale();
-                const dy = (e.clientY - pd.y) / svgScale();
-                if (Math.abs(e.clientX - pd.x) > 3 || Math.abs(e.clientY - pd.y) > 3) { pd.moved = true; g.classList.add("dragging"); }
-                nodeState[n.id].dx = pd.dx + dx;
-                nodeState[n.id].dy = pd.dy + dy;
-                g.setAttribute("transform", `translate(${nodeState[n.id].dx},${nodeState[n.id].dy})`);
-                updateConnections();
-            });
-            g.addEventListener("pointerup", (e) => {
-                if (!pd) return;
-                const moved = pd.moved; pd = null; g.classList.remove("dragging");
-                if (moved) { saveState(); }
-                else { selectEdit(n.id); }
-            });
-            g.addEventListener("click", (e) => {
-                if (state.mode === "browse") { e.stopPropagation(); selectNode(n.id); }
-            });
-            text.addEventListener("dblclick", (e) => {
-                if (state.mode === "edit") { e.stopPropagation(); openTextEditor(n.id, text); }
-            });
+        function positionResizeHandle() {
+            if (!state.selectedId || state.mode !== "edit") { if (resizeHandle) resizeHandle.style.display = "none"; return; }
+            const b = nodeBox(state.selectedId);
+            resizeHandle.style.display = "block";
+            resizeHandle.setAttribute("x", b.x + b.w - 6); resizeHandle.setAttribute("y", b.y + b.h - 6);
+        }
+        function positionConnHandles() {
+            const c = rawData.connections[state.selectedConn]; if (!c) return;
+            const A = nodeBox(c.from), B = nodeBox(c.to), cs = connState[state.selectedConn];
+            handleGroup.innerHTML = "";
+            const mk = (hx, hy, which) => { const c2 = el("circle", { cx: hx, cy: hy, r: 6, fill: "var(--accent)", stroke: "#fff", "stroke-width": 2, "data-handle": which, style: "cursor:grab" }); handleGroup.appendChild(c2); };
+            mk(A.cx + cs.sx, A.cy + cs.sy, "start"); mk(B.cx + cs.ex, B.cy + cs.ey, "end");
         }
 
-        // ---- selection actions ----
-        function selectNode(id) {
-            state.selectedId = id; state.selectedConn = null;
-            applySelectionVisual();
-            renderDetail(id);
-        }
-        function selectEdit(id) {
-            state.selectedId = id; state.selectedConn = null;
-            applySelectionVisual();
-            renderDetail(id, true);
-        }
-        function selectConn(index) {
-            state.selectedConn = index; state.selectedId = null;
-            applySelectionVisual();
-            const c = rawData.connections[index];
-            renderConnDetail(c);
+        function editText(id) {
+            const g = nodeEls[id], box = nodeBox(id);
+            const ta = $("#inline-editor");
+            const r = svg.getBoundingClientRect();
+            ta.style.display = "block";
+            ta.style.left = (r.left + (box.cx - VB.x) / VB.w * r.width - 60) + "px";
+            ta.style.top = (r.top + (box.cy - VB.y) / VB.h * r.height - 20) + "px";
+            ta.value = nodeById[id].name; ta.focus(); ta.select();
+            const commit = () => { const v = ta.value.trim(); if (v) { nodeById[id].name = v; g.querySelector("text").textContent = v; } ta.style.display = "none"; ta.removeEventListener("blur", commit); saveState(); };
+            ta.addEventListener("blur", commit);
+            ta.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); ta.blur(); } });
         }
 
-        // ---- detail panel ----
-        const detailPanel = document.getElementById("detail-panel");
-        function renderDetail(id, editing) {
-            const n = nodeById[id];
-            const mod = moduleMap[n.module];
-            const pre = prereqs[id].map(i => nodeById[i].name);
-            const nxt = nexts[id].map(i => nodeById[i].name);
-            let html = '<div class="d-title">' + esc(n.name) + '</div>';
-            html += '<div class="d-badges"><span class="badge">' + esc(n.grade) + '</span><span class="badge" style="background:' + mod.color + '33;color:#334155">' + esc(mod.name) + '</span></div>';
-            html += section("前置知识", pre.length ? chipList(pre, prereqs[id]) : '<span class="chip empty">无（基础起点）</span>');
-            html += section("后续关联", nxt.length ? chipList(nxt, nexts[id]) : '<span class="chip empty">无（终端节点）</span>');
-            if (n.detail) {
-                html += '<div class="d-section"><h5>📌 核心内容</h5><ul class="bullets">' + n.detail.core.map(t => '<li>' + esc(t) + '</li>').join("") + '</ul></div>';
-                html += '<div class="d-section"><h5>⚠️ 常见易错点</h5><ul class="bullets">' + n.detail.commonErrors.map(t => '<li>' + esc(t) + '</li>').join("") + '</ul></div>';
-            }
-            if (editing) html += '<div class="hint-note" style="margin-top:14px">编辑模式：双击节点文字可修改；拖动节点调整位置；选中后拖右下角缩放。</div>';
-            html += aiBoxHtml(id);
-            detailPanel.innerHTML = html;
-            bindChips();
-            bindAi(id);
-        }
-        function renderConnDetail(c) {
-            const from = nodeById[c.from], to = nodeById[c.to];
-            detailPanel.innerHTML =
-                '<div class="d-title" style="font-size:17px">知识关系</div>' +
-                '<div class="d-badges"><span class="badge">前置 → 后续</span></div>' +
-                '<div class="d-section"><h5>前置知识</h5>' + chipSingle(from) + '</div>' +
-                '<div class="d-section"><h5>后续关联</h5>' + chipSingle(to) + '</div>' +
-                '<div class="hint-note">编辑模式下可拖动两端圆点、滚轮调线宽来调整此连线。</div>';
-            bindChips();
-        }
-        function section(title, body) { return '<div class="d-section"><h5>' + title + '</h5><div class="chip-list">' + body + '</div></div>'; }
-        function chipList(names, ids) { return names.map((nm, i) => '<span class="chip" data-go="' + ids[i] + '">' + esc(nm) + '</span>').join(""); }
-        function chipSingle(n) { return '<span class="chip" data-go="' + n.id + '">' + esc(n.name) + '</span>'; }
-        function bindChips() {
-            detailPanel.querySelectorAll(".chip[data-go]").forEach(ch => {
-                ch.addEventListener("click", () => selectNode(ch.dataset.go));
-            });
-        }
-        function esc(s) { return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
-
-        // ---- AI demo (preset answers, no real API) ----
-        const AI_RESPONSES = {
-            "real-numbers": {
-                simple: "实数就是「所有能在数轴上找到位置的数」，包括有理数（整数、分数）和无理数（如 π、√2）。可以想象数轴向两端无限延伸，每个点都对应一个实数。",
-                example: "用一把无限精确的尺子量桌边长，量到的长度（哪怕除不尽）就是一个实数；√2 就是边长为 1 的正方形的对角线长度。",
-                question: "判断下列各数哪些是无理数：0、3.14、√3、1/3、π。并说明实数与有理数的关系。",
-                compare: "实数 vs 有理数及其运算：有理数能写成整数之比（有限小数或循环小数）；实数还包含无限不循环小数（无理数）。实数在有理数基础上补全了「数轴上的空缺」。"
-            },
-            "factorization": {
-                simple: "因式分解是把一个多项式「拆」成几个整式相乘的形式，相当于整数里的因数分解，只是对象变成了代数式。",
-                example: "就像把 12 拆成 3×4，把 x²−1 拆成 (x+1)(x−1)。它和整式乘法正好相反。",
-                question: "分解因式：x²−4x+4；9a²−b²。并说明分别用了哪种方法。",
-                compare: "因式分解 vs 整式的乘除：整式乘除是「展开 / 合并」，因式分解是「反向拆开」。一个从左往右、一个从右往左，是互逆过程。"
-            },
-            "quadratic-equation": {
-                simple: "一元二次方程是「只有一个未知数、且未知数最高次数是 2」的方程，标准写法是 ax²+bx+c=0。解它的核心就是找出使等式成立的两个 x 值（根）。",
-                example: "把一个边长为 x 米的正方形花园四边各加 1 米后面积是 100 平方米，列方程就是 (x+2)²=100，这正是含二次项的方程。",
-                question: "解方程 x²−5x+6=0（分别用因式分解法和公式法），并验证判别式 Δ。",
-                compare: "一元二次方程 vs 一元一次方程：一元一次只有一个根、用移项就能解；一元二次最多两个根，需要配方法 / 公式法 / 因式分解。两者是「次数升一阶」的递进关系。"
-            },
-            "linear-function": {
-                simple: "一次函数描述「两个量按固定比例一起变」的关系，图象是一条直线。k 是斜率（变化快慢），b 是起点（与 y 轴交点）。",
-                example: "打车计费就是一次函数：起步价 b 元，每公里 k 元，总费用 y = kx + b。行驶越远费用越高，且增速恒定。",
-                question: "已知一次函数过 (0,2) 和 (1,5)，求其解析式，并说明 k、b 的几何意义。",
-                compare: "一次函数 vs 反比例函数：一次是「均匀变化」（直线），反比例是「此消彼长」（双曲线，k>0 时一个量增大另一个减小）。两者都刻画两个变量的关系，但变化规律相反。"
-            },
-            "quadratic-function": {
-                simple: "二次函数是「含 x² 的最基本函数」，图象是抛物线。a 决定开口方向，顶点是最值点，对称轴把抛物线分成两半。",
-                example: "投篮时篮球的飞行轨迹、喷泉的水线，都是抛物线——这正是二次函数的图象，最高点 / 最低点对应顶点。",
-                question: "已知二次函数 y=−x²+2x+3，求其对称轴、顶点坐标及与 x 轴的交点。",
-                compare: "二次函数 vs 一次函数：一次是直线、均匀变化；二次是抛物线、有最值。从一次到二次，是从「线性」到「非线性」的关键一跃。"
-            },
-            "triangle": {
-                simple: "三角形是由三条线段首尾相连围成的图形。它的核心规律是「三边关系」和「内角和 180°」，全等 / 相似则是判断两个三角形是否「一模一样」或「形状相同」。",
-                example: "用三根木条钉成框架，哪怕用力推也基本不变形——这就是三角形的稳定性，所以塔吊、桥梁都大量使用三角形结构。",
-                question: "已知等腰三角形一边长为 5，另一边长为 8，求周长（注意分类讨论腰 / 底）。",
-                compare: "三角形 vs 平行四边形：三角形稳定不可拉伸；平行四边形易变形（可伸缩），所以常配三角形做加固。一个是「刚性」代表，一个是「可变」代表。"
-            },
-            "similarity": {
-                simple: "图形的相似指「形状相同、大小可以不同」，对应角相等、对应边成比例。相似比就是放大 / 缩小的倍数。",
-                example: "照片放大冲洗、地图与实际地形，都是相似——内容一致，只是尺寸按比例缩放。",
-                question: "已知 △ABC∽△A'B'C'，相似比为 2，若 AB=3，求 A'B'；并说明对应角的关系。",
-                compare: "图形的相似 vs 三角形全等：全等是「完全一样」（相似比 = 1）；相似允许缩放。全等是相似的特例。先学全等再学相似，是「放宽为可缩放」的推广。"
-            },
-            "circle": {
-                simple: "圆是「到定点距离等于定长的所有点」组成的图形。核心定理有垂径定理、圆周角定理和切线判定，都围绕「半径」「圆心」「弧」展开。",
-                example: "车轮做成圆形，是因为圆心到地面的距离（半径）始终相等，车子才能平稳前进——这正是圆的对称性在起作用。",
-                question: "已知 ⊙O 中弦 AB 长为 8，圆心 O 到 AB 的距离为 3，求半径；并说明用到了哪条定理。",
-                compare: "圆 vs 特殊平行四边形：两者都有对称性，但圆是「旋转任意角度都对称」的曲线图形；特殊平行四边形（矩 / 菱 / 正）只有特定角度对称且由直线段组成。一个曲线一个直线，对称方式有同有异。"
-            }
-        };
-        const AI_LABEL = { simple: "用更简单的话解释", example: "生活化例子", question: "一道基础题", compare: "与相近知识点的区别" };
-        function aiQuestionLabel(kind) { return AI_LABEL[kind] || ""; }
-        function getAiResponse(id, kind) {
-            const n = nodeById[id];
-            const cur = AI_RESPONSES[id] && AI_RESPONSES[id][kind];
-            if (cur) return cur;
-            if (kind === "simple") {
-                const pre = prereqs[id].map(i => nodeById[i].name).join("、") || "基础起点";
-                const nxt = nexts[id].map(i => nodeById[i].name).join("、") || "无";
-                return n.name + "是" + n.grade + "「" + moduleMap[n.module].name + "」中的知识点，建立在 " + pre + " 之上，后续会通向 " + nxt + "。建议先吃透前置知识，再理解它在整体体系中的位置。";
-            }
-            if (kind === "example") {
-                return "生活中可以这样理解" + n.name + "：在做计划、比较或测量时，往往会用到它背后的思想——把具体问题抽象成数学关系来分析，从而得到更清晰的结论。";
-            }
-            if (kind === "question") {
-                return "基础题：请回顾「" + n.name + "」的核心概念，并尝试用它解决一个你课本上的例题；若已掌握，可尝试给同桌讲解一遍（费曼学习法）。";
-            }
-            if (kind === "compare") {
-                const sib = rawData.nodes.find(x => x.module === n.module && x.id !== id);
-                if (sib) return "「" + n.name + "」与「" + sib.name + "」同属「" + moduleMap[n.module].name + "」模块。前者侧重 " + n.name + " 的核心思路，后者侧重 " + sib.name + "；理解它们的联系与区别，有助于建立模块内的知识网络。";
-                return "「" + n.name + "」在初中数学中相对独立，可重点对比它与前置 / 后续知识的递进关系。";
-            }
-            return "（暂无该类型回答）";
-        }
-        function aiBoxHtml(id) {
-            return '<div class="ai-box"><div class="ai-head">🤖 AI 解释这个知识点</div>' +
-                '<div class="ai-opts">' +
-                '<button class="ai-opt" data-ai="simple">用更简单的话解释</button>' +
-                '<button class="ai-opt" data-ai="example">给我一个生活化例子</button>' +
-                '<button class="ai-opt" data-ai="question">生成一道基础题</button>' +
-                '<button class="ai-opt" data-ai="compare">比较相近知识点</button>' +
-                '</div><div class="ai-answer" id="ai-answer" style="display:none"></div></div>';
-        }
-        function bindAi(id) {
-            const box = detailPanel.querySelector(".ai-box");
-            if (!box) return;
-            box.querySelectorAll(".ai-opt").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const kind = btn.dataset.ai;
-                    const out = detailPanel.querySelector("#ai-answer");
-                    out.style.display = "block";
-                    out.innerHTML = '<span class="ai-q">' + aiQuestionLabel(kind) + '</span>' + esc(getAiResponse(id, kind));
-                });
-            });
+        // ---------- center / locate ----------
+        function centerOn(id) {
+            const b = nodeBox(id), r = svg.getBoundingClientRect();
+            const tx = b.cx / VB.w * r.width, ty = b.cy / VB.h * r.height;
+            const wrap = svg.parentElement;
+            if (wrap.scrollTo) wrap.scrollTo({ left: Math.max(0, tx - wrap.clientWidth / 2), top: Math.max(0, ty - wrap.clientHeight / 2), behavior: "smooth" });
         }
 
-        // ---- inline text editor ----
-        const editor = document.getElementById("inline-editor");
-        let editingId = null;
-        function openTextEditor(id, textEl) {
-            editingId = id;
-            const b = nodeBox(id);
-            const tl = svg.createSVGPoint(); tl.x = b.x; tl.y = b.y;
-            const tr = svg.createSVGPoint(); tr.x = b.x + b.w; tr.y = b.y + b.h;
-            const m = textEl.getScreenCTM();
-            const a = tl.matrixTransform(m), c = tr.matrixTransform(m);
-            editor.value = nodeById[id].name;
-            editor.style.left = Math.min(a.x, c.x) - 6 + "px";
-            editor.style.top = Math.min(a.y, c.y) - 6 + "px";
-            editor.style.width = Math.max(120, Math.abs(c.x - a.x) + 12) + "px";
-            editor.style.height = Math.max(40, Math.abs(c.y - a.y) + 12) + "px";
-            editor.style.display = "block";
-            editor.focus(); editor.select();
-        }
-        function commitEditor() {
-            if (editingId === null) return;
-            const v = editor.value.trim() || nodeById[editingId].name;
-            nodeById[editingId].name = v;
-            const b = nodeBox(editingId);
-            drawNodeText(nodeEls[editingId].querySelector("text"), nodeById[editingId], b);
-            if (state.selectedId === editingId) renderDetail(editingId, true);
-            editor.style.display = "none";
-            editingId = null;
-            saveState();
-        }
-        editor.addEventListener("blur", commitEditor);
-        editor.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commitEditor(); } });
-
-        // ---- connection editing (edit mode) ----
-        svg.addEventListener("click", (e) => {
-            const line = e.target.closest && e.target.closest(".conn");
-            if (line) { e.stopPropagation(); selectConn(Number(line.dataset.index)); return; }
-            // click blank -> deselect
-            if (state.mode === "browse" && e.target === svg) { state.selectedId = null; applySelectionVisual(); detailPanel.innerHTML = emptyDetail(); clearSearch(); }
-        });
-        function emptyDetail() {
-            return '<div class="detail-empty"><div class="big">🧭</div>点击任意知识节点，查看它的年级、所属模块、前置知识与后续关联。</div>';
-        }
-
-        // wheel width (svg is stable, attach once)
-        svg.addEventListener("wheel", (e) => {
-            if (state.mode !== "edit" || state.selectedConn === null) return;
-            const line = connEls[state.selectedConn].line;
-            if (e.target !== line) return;
-            e.preventDefault();
-            const cs = connState[state.selectedConn];
-            if (e.altKey) cs.head = Math.max(3, Math.min(16, cs.head + (e.deltaY < 0 ? 1 : -1)));
-            else cs.w = Math.max(1, Math.min(10, cs.w + (e.deltaY < 0 ? 0.5 : -0.5)));
-            updateConnections(); saveState();
-        }, { passive: false });
-
-        // shift+delete reset
-        window.addEventListener("keydown", (e) => {
-            if (e.shiftKey && e.key === "Delete") { restoreDefault(); }
-        });
-
-        // ---- mode toggle ----
-        const modeSeg = document.getElementById("mode-seg");
-        function setMode(mode) {
-            state.mode = mode;
-            document.body.classList.toggle("mode-edit", mode === "edit");
-            document.body.classList.toggle("mode-browse", mode === "browse");
-            modeSeg.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
-            // leaving edit: clear edit-only selections
-            state.selectedConn = null;
-            applySelectionVisual();
-        }
-        modeSeg.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-            setMode(b.dataset.mode);
-            if (b.dataset.mode === "edit") toast("已切换到编辑模式：可拖动 / 改字 / 调箭头");
-        }));
-
-        // ---- home overlay ----
-        const home = document.getElementById("home");
-        document.getElementById("home-explore").addEventListener("click", () => { home.style.display = "none"; setMode("browse"); });
-        document.getElementById("home-edit").addEventListener("click", () => { home.style.display = "none"; setMode("edit"); });
-        document.getElementById("home-about").addEventListener("click", () => openModal("about-modal"));
-
-        // ---- help modal ----
-        function openModal(id) { document.getElementById(id).classList.add("open"); }
-        function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-        document.getElementById("help-btn").addEventListener("click", () => openModal("help-modal"));
-        document.getElementById("about-btn").addEventListener("click", () => openModal("about-modal"));
-        document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.close)));
-        document.querySelectorAll(".backdrop").forEach(b => b.addEventListener("click", (e) => { if (e.target === b) b.classList.remove("open"); }));
-
-        // ---- export / import ----
-        const exBtn = document.getElementById("export-btn");
-        const exMenu = document.getElementById("export-menu");
-        const fileInput = document.getElementById("file-input");
-        exBtn.addEventListener("click", (e) => { e.stopPropagation(); exMenu.classList.toggle("open"); });
-        document.addEventListener("click", () => exMenu.classList.remove("open"));
-        exMenu.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-            exMenu.classList.remove("open");
-            const act = b.dataset.act;
-            if (act === "reset") { restoreDefault(); return; }
-            if (act === "json") return exportJson();
-            if (act === "svg") return exportSvg();
-            if (act === "png") return exportPng();
-            if (act === "import") { fileInput.value = ""; fileInput.click(); }
-        }));
-        fileInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                try { applyImportedData(JSON.parse(reader.result)); toast("已导入 JSON 数据"); }
-                catch (err) { toast("导入失败：JSON 格式不正确"); }
-                fileInput.value = "";
-            };
-            reader.readAsText(file);
-        });
-
-        function download(filename, content, mime) {
-            const blob = new Blob([content], { type: mime });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url; a.download = filename; a.click();
-            setTimeout(() => URL.revokeObjectURL(url), 1500);
-        }
+        // ---------- export / import ----------
         function currentData() {
-            return {
-                meta: rawData.meta,
-                modules: rawData.modules,
-                nodes: rawData.nodes.map(n => ({
-                    id: n.id, name: n.name, grade: n.grade, module: n.module,
-                    x: n.x, y: n.y, w: nodeState[n.id].w, h: nodeState[n.id].h,
-                    lines: n.lines || undefined, detail: n.detail || undefined
-                })),
-                connections: rawData.connections
-            };
+            return { modules: rawData.modules, nodes: rawData.nodes.map(n => ({ ...n, x: nodeState[n.id].x, y: nodeState[n.id].y, w: nodeState[n.id].w, h: nodeState[n.id].h })), connections: rawData.connections, version: "北师大版", updatedAt: new Date().toISOString().slice(0, 10), mastery: state.mastery };
         }
-        const EXPORT_CSS = ".conn{fill:none;stroke:#94a3b8;stroke-width:2;pointer-events:none;}" +
-            "text{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;}" +
-            ".node rect{stroke:#cbd5e1;}";
-        function getStandaloneSvg() {
+        function download(name, content, type) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+        function exportJSON() { download("初中数学知识路径图.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
+        function exportSVG() {
             const clone = svg.cloneNode(true);
             clone.setAttribute("xmlns", SVGNS);
-            clone.setAttribute("width", VB_W);
-            clone.setAttribute("height", VB_H);
-            clone.querySelectorAll(".arrow-handle, .resize-handle").forEach(e => e.remove());
-            const style = document.createElementNS(SVGNS, "style");
-            style.textContent = EXPORT_CSS;
-            clone.insertBefore(style, clone.firstChild);
-            return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
+            const out = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
+            download("初中数学知识路径图.svg", out, "image/svg+xml"); toast("已导出 SVG");
         }
-        function exportJson() {
-            download("初中数学知识路径图.json", JSON.stringify(currentData(), null, 2), "application/json");
-        }
-        function exportSvg() {
-            download("初中数学知识路径图.svg", getStandaloneSvg(), "image/svg+xml");
-        }
-        function exportPng() {
-            const svgStr = getStandaloneSvg();
+        async function exportPNG() {
+            const xml = new XMLSerializer().serializeToString(svg);
+            const svg64 = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
             const img = new Image();
             img.onload = () => {
-                const scale = 2;
-                const canvas = document.createElement("canvas");
-                canvas.width = VB_W * scale; canvas.height = VB_H * scale;
-                const ctx = canvas.getContext("2d");
-                ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(b => {
-                    const url = URL.createObjectURL(b);
-                    const a = document.createElement("a"); a.href = url; a.download = "初中数学知识路径图.png"; a.click();
-                    setTimeout(() => URL.revokeObjectURL(url), 1500);
-                });
+                const scale = 2, cv = document.createElement("canvas");
+                cv.width = VB.w * scale; cv.height = VB.h * scale;
+                const ctx = cv.getContext("2d");
+                ctx.fillStyle = "#f7f8fb"; ctx.fillRect(0, 0, cv.width, cv.height);
+                ctx.drawImage(img, 0, 0, cv.width, cv.height);
+                cv.toBlob(b => { download("初中数学知识路径图.png", b, "image/png"); toast("已导出 PNG"); });
             };
-            img.onerror = () => toast("PNG 导出失败，可改用 SVG 导出");
-            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+            img.onerror = () => toast("PNG 导出需浏览器渲染，请重试");
+            img.src = svg64;
         }
-        function applyImportedData(data) {
-            if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.connections)) throw new Error("missing fields");
-            if (Array.isArray(data.modules)) rawData.modules = data.modules;
-            rawData.nodes = data.nodes;
-            rawData.connections = data.connections;
-            moduleMap = {}; rawData.modules.forEach(m => moduleMap[m.id] = m);
-            nodeById = {}; rawData.nodes.forEach(n => nodeById[n.id] = n);
-            prereqs = {}; nexts = {}; rawData.nodes.forEach(n => { prereqs[n.id] = []; nexts[n.id] = []; });
-            rawData.connections.forEach(c => { if (prereqs[c.to] && nexts[c.from]) { prereqs[c.to].push(c.from); nexts[c.from].push(c.to); } });
-            Object.keys(nodeState).forEach(k => delete nodeState[k]);
-            rawData.nodes.forEach(n => { nodeState[n.id] = { dx: 0, dy: 0, w: n.w, h: n.h }; });
-            Object.keys(connState).forEach(k => delete connState[k]);
-            rawData.connections.forEach((_, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; });
-            state.selectedId = null; state.selectedConn = null; state.search = ""; state.searchSet = null;
-            rebuildModuleFilters();
-            saveState();
-            renderGraph();
-            applyVisibility();
-            detailPanel.innerHTML = emptyDetail();
-        }
-        function rebuildModuleFilters() {
-            const wrap = document.getElementById("module-filters");
-            wrap.innerHTML = "";
-            rawData.modules.forEach(m => {
-                const lbl = document.createElement("label");
-                lbl.className = "opt";
-                lbl.innerHTML = '<input type="checkbox" value="' + m.id + '" checked> <span class="mod-dot" style="background:' + m.color + '"></span>' + m.name;
-                wrap.appendChild(lbl);
-            });
-        }
-
-        // ---- restore ----
         function restoreDefault() {
             localStorage.removeItem(STATE_KEY);
-            const fresh = JSON.parse(document.getElementById("graph-data").textContent);
-            rawData.modules = fresh.modules;
-            rawData.nodes = fresh.nodes;
-            rawData.connections = fresh.connections;
-            moduleMap = {}; fresh.modules.forEach(m => moduleMap[m.id] = m);
-            nodeById = {}; fresh.nodes.forEach(n => nodeById[n.id] = n);
-            prereqs = {}; nexts = {}; fresh.nodes.forEach(n => { prereqs[n.id] = []; nexts[n.id] = []; });
-            fresh.connections.forEach(c => { if (prereqs[c.to] && nexts[c.from]) { prereqs[c.to].push(c.from); nexts[c.from].push(c.to); } });
-            Object.keys(nodeState).forEach(k => delete nodeState[k]);
-            fresh.nodes.forEach(n => { nodeState[n.id] = { dx: 0, dy: 0, w: n.w, h: n.h }; });
-            Object.keys(connState).forEach(k => delete connState[k]);
-            fresh.connections.forEach((_, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; });
-            state.selectedId = null; state.selectedConn = null; state.search = ""; state.searchSet = null;
-            rebuildModuleFilters();
-            renderGraph();
-            applyVisibility();
-            searchBox.value = ""; searchClear.classList.remove("show");
-            detailPanel.innerHTML = emptyDetail();
+            const fresh = JSON.parse($("#graph-data").textContent);
+            rawData.nodes.forEach(n => { nodeById[n.id].name = fresh.nodes.find(f => f.id === n.id).name; });
+            rawData.connections.forEach((_, i) => { connState[i] = { sx: 0, sy: 0, ex: 0, ey: 0, w: 2, head: 7 }; });
+            state.mastery = {}; state.search = ""; $("#search").value = "";
+            forceLayout();
+            state.selectedId = null; state.selectedConn = null;
+            renderGraph(); detailPanel.innerHTML = emptyDetail(); updateMasteryBar();
             toast("已恢复默认版本");
         }
-
-        // ---- toast ----
-        let toastTimer = null;
-        function toast(msg) {
-            const t = document.getElementById("toast");
-            t.textContent = msg; t.classList.add("show");
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+        function importJSON(file) {
+            const rd = new FileReader();
+            rd.onload = () => { try {
+                const d = JSON.parse(rd.result);
+                if (d.nodes) { d.nodes.forEach(fn => { if (nodeById[fn.id]) { nodeById[fn.id].name = fn.name; if (fn.x != null) nodeState[fn.id].x = fn.x; if (fn.y != null) nodeState[fn.id].y = fn.y; if (fn.w) nodeState[fn.id].w = fn.w; if (fn.h) nodeState[fn.id].h = fn.h; } }); }
+                if (d.mastery) state.mastery = d.mastery;
+                updateMasteryBar(); renderGraph(); saveState(); toast("已导入 JSON");
+            } catch (e) { toast("JSON 解析失败"); } };
+            rd.readAsText(file);
         }
 
-        // ---- search + path highlight + filters ----
-        const searchBox = document.getElementById("search");
-        const searchClear = document.getElementById("search-clear");
+        function saveState() { try { localStorage.setItem(STATE_KEY, JSON.stringify({ nodeState, connState, mastery: state.mastery })); } catch (e) {} }
+        function loadState() {
+            try {
+                const s = JSON.parse(localStorage.getItem(STATE_KEY) || "{}");
+                if (s.nodeState) for (const id in s.nodeState) if (nodeState[id]) Object.assign(nodeState[id], s.nodeState[id]);
+                if (s.connState) for (const i in s.connState) if (connState[i]) Object.assign(connState[i], s.connState[i]);
+            } catch (e) {}
+        }
 
-        function getAncestors(id) {
-            const seen = new Set(), stack = prereqs[id].slice();
-            while (stack.length) {
-                const x = stack.pop();
-                if (seen.has(x)) continue;
-                seen.add(x);
-                prereqs[x].forEach(p => stack.push(p));
-            }
-            return seen;
-        }
-        function passesFilter(id) {
-            const grade = (document.querySelector('input[name="grade"]:checked') || {}).value || "all";
-            const checked = Array.from(document.querySelectorAll('#module-filters input:checked')).map(c => c.value);
-            const n = nodeById[id];
-            const gradeOk = grade === "all" || n.grade === grade;
-            const modOk = checked.includes(n.module);
-            return gradeOk && modOk;
-        }
-        function isFilterActive() {
-            const grade = (document.querySelector('input[name="grade"]:checked') || {}).value || "all";
-            const checked = Array.from(document.querySelectorAll('#module-filters input:checked')).map(c => c.value);
-            return grade !== "all" || checked.length < rawData.modules.length;
-        }
-        function applyVisibility() {
-            const searching = !!state.searchSet && state.searchSet.size > 0;
-            const filtering = !searching && isFilterActive();
-            Object.keys(nodeEls).forEach(id => {
-                const g = nodeEls[id];
-                let show, hit = false;
-                if (searching) { show = state.searchSet.has(id); hit = true; }
-                else if (filtering) { show = passesFilter(id); }
-                else { show = true; }
-                g.classList.toggle("dim", !show);
-                g.classList.toggle("hit", show && hit);
+        // ---------- mobile tree ----------
+        function renderMobileTree() {
+            const root = $("#mtree"); if (!root) return;
+            const grades = ["初一", "初二", "初三"];
+            let html = "";
+            grades.forEach(g => {
+                const mods = {};
+                rawData.nodes.filter(n => n.grade === g).forEach(n => { (mods[n.module] = mods[n.module] || []).push(n); });
+                let mh = "";
+                Object.keys(mods).forEach(mid => {
+                    mh += `<div class="mt-mod"><div class="mt-h" data-toggle>${moduleMap[mid].name} <span>▾</span></div><div class="mt-hidden">` +
+                        mods[mid].map(n => `<div class="mt-node" data-node="${n.id}" style="border-left-color:${moduleMap[mid].color}">${esc(n.name)}<div class="mt-meta">${g} · ${["未学", "学习中", "已掌握"][state.mastery[n.id] || 0]}</div></div>`).join("") +
+                        `</div></div>`;
+                });
+                html += `<div class="mt-grade"><div class="mt-h" data-toggle>${g} 年级 <span>▾</span></div><div class="mt-hidden">${mh}</div></div>`;
             });
-            connEls.forEach(({ line, c }) => {
-                let on;
-                if (searching) on = state.searchSet.has(c.from) && state.searchSet.has(c.to);
-                else if (filtering) on = passesFilter(c.from) && passesFilter(c.to);
-                else on = true;
-                line.classList.toggle("dim", !on);
+            root.innerHTML = html;
+            $$("#mtree [data-toggle]").forEach(h => h.addEventListener("click", () => { const t = h.nextElementSibling; t.classList.toggle("mt-hidden"); }));
+            $$("#mtree .mt-node").forEach(card => card.addEventListener("click", () => { openMobileDetail(card.dataset.node); }));
+        }
+        function openMobileDetail(id) {
+            state.selectedId = id; renderDetail(id);
+            $("#mt-sheet-body").innerHTML = "";
+            $("#mt-sheet-body").appendChild(detailPanel.cloneNode(true));
+            // rebind chips/status inside sheet
+            $$("#mt-sheet-body .status-dot-btn").forEach(b => b.addEventListener("click", () => setMastery(id, +b.dataset.st)));
+            $$("#mt-sheet-body .chip").forEach(c => c.addEventListener("click", () => { const tid = c.dataset.id; if (tid) openMobileDetail(tid); }));
+            bindSheetAi(id);
+            $("#mt-sheet").classList.add("open");
+        }
+        function bindSheetAi(id) {
+            const box = $(`#mt-sheet-body #ai-msgs-${id}`); if (!box) return;
+            const send = () => { const inp = $(`#mt-sheet-body #ai-input-${id}`); const q = inp.value.trim(); if (!q) return; box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`); inp.value = ""; setTimeout(() => { box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`); }, 300); };
+            $(`#mt-sheet-body #ai-send-${id}`).addEventListener("click", send);
+            $(`#mt-sheet-body .ai-quick button`).forEach(b => b.addEventListener("click", () => { const q = b.dataset.q; box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`); setTimeout(() => box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`), 300); }));
+        }
+
+        // ---------- misc UI ----------
+        const emptyDetail = () => `<div class="detail-empty"><div class="big">🧭</div>点击任意知识节点，查看它的年级、模块、前置学习链、后续关联与推荐路径；右下角圆点可标记掌握状态。</div>`;
+        let toastT; function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 1800); }
+        function openModal(id) { $("#" + id).classList.add("open"); }
+        function closeModals() { $$(".backdrop").forEach(m => m.classList.remove("open")); }
+
+        // ---------- mode ----------
+        function setMode(mode) {
+            state.mode = mode;
+            $$("#mode-seg button").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
+            svg.classList.toggle("mode-edit", mode === "edit"); svg.classList.toggle("mode-browse", mode === "browse");
+            document.body.classList.toggle("mode-edit", mode === "edit"); document.body.classList.toggle("mode-browse", mode === "browse");
+            state.selectedConn = null;
+            renderGraph();
+            if (state.selectedId) renderDetail(state.selectedId); else detailPanel.innerHTML = emptyDetail();
+        }
+
+        // ---------- init ----------
+        function init() {
+            loadMastery(); loadState(); forceLayout();
+            // build module filters
+            const wrap = $("#module-filters");
+            rawData.modules.forEach(m => { const lbl = document.createElement("label"); lbl.className = "opt"; lbl.innerHTML = `<input type="checkbox" value="${m.id}" checked> <span class="mod-dot" style="background:${m.color}"></span>${m.name}`; wrap.appendChild(lbl); });
+            $$('#module-filters input').forEach(c => c.addEventListener("change", () => { state.modules = new Set($$('#module-filters input:checked').map(x => x.value)); renderGraph(); }));
+            $$('input[name="grade"]').forEach(r => r.addEventListener("change", () => { state.grade = r.value; renderGraph(); }));
+
+            $("#home-explore").addEventListener("click", () => $("#home").classList.add("hidden"));
+            $("#home-edit").addEventListener("click", () => { $("#home").classList.add("hidden"); setMode("edit"); });
+            $("#home-about").addEventListener("click", () => openModal("about-modal"));
+
+            // search
+            const sb = $("#search");
+            sb.addEventListener("input", () => {
+                state.search = sb.value;
+                $("#search-clear").style.display = sb.value ? "block" : "none";
+                const id = matchId(sb.value);
+                renderGraph();
+                if (id) { state.selectedId = id; applySelectionVisual(); renderDetail(id); animatePath(id); centerOn(id); }
             });
-        }
-        function locateNode(id) {
-            const b = nodeBox(id);
-            const wrap = document.querySelector(".canvas-wrap");
-            const rect = svg.getBoundingClientRect();
-            if (!rect.width) return;
-            const sx = rect.width / VB_W, sy = rect.height / VB_H;
-            const tx = b.cx * sx, ty = b.cy * sy;
-            const left = Math.max(0, tx - wrap.clientWidth / 2);
-            const top = Math.max(0, ty - wrap.clientHeight / 2);
-            if (wrap.scrollTo) wrap.scrollTo({ left, top, behavior: "smooth" });
-            else { wrap.scrollLeft = left; wrap.scrollTop = top; }
-        }
-        function clearSearch() {
-            state.search = ""; state.searchSet = null;
-            searchBox.value = ""; searchClear.classList.remove("show");
-            applyVisibility();
-        }
-        searchBox.addEventListener("input", () => {
-            const q = searchBox.value.trim().toLowerCase();
-            searchClear.classList.toggle("show", !!searchBox.value);
-            if (!q) { clearSearch(); return; }
-            const matches = rawData.nodes.filter(n => n.name.toLowerCase().includes(q));
-            if (!matches.length) {
-                state.searchSet = new Set(); applyVisibility();
-                toast("未找到匹配的知识点");
-                return;
-            }
-            const set = new Set();
-            matches.forEach(m => { set.add(m.id); getAncestors(m.id).forEach(a => set.add(a)); });
-            state.searchSet = set; state.search = q;
-            applyVisibility();
-            selectNode(matches[0].id);
-            locateNode(matches[0].id);
-        });
-        searchClear.addEventListener("click", clearSearch);
-        document.querySelectorAll('input[name="grade"]').forEach(r => r.addEventListener("change", applyVisibility));
-        document.getElementById("module-filters").addEventListener("change", applyVisibility);
+            $("#search-clear").addEventListener("click", () => { sb.value = ""; state.search = ""; $("#search-clear").style.display = "none"; renderGraph(); detailPanel.innerHTML = emptyDetail(); });
 
-        // ---- build module filter UI ----
-        rebuildModuleFilters();
+            // mode
+            $$("#mode-seg button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
 
-        // ---- init ----
-        loadState();
-        renderGraph();
-        setMode("browse");
+            // export menu
+            $("#export-btn").addEventListener("click", (e) => { e.stopPropagation(); $("#export-menu").classList.toggle("open"); });
+            document.addEventListener("click", (e) => { if (!e.target.closest("#export-menu")) $("#export-menu").classList.remove("open"); });
+            $$("#export-menu button").forEach(b => b.addEventListener("click", (e) => { e.stopPropagation(); $("#export-menu").classList.remove("open"); const a = b.dataset.act; if (a === "png") exportPNG(); else if (a === "svg") exportSVG(); else if (a === "json") exportJSON(); else if (a === "reset") restoreDefault(); }));
+            $("#file-input").addEventListener("change", (e) => { if (e.target.files[0]) importJSON(e.target.files[0]); e.target.value = ""; });
+            // wire import button (reuse file input)
+            const imp = $$("#export-menu button").find(b => b.dataset.act === "import"); if (imp) imp.addEventListener("click", () => $("#file-input").click());
+
+            // modals
+            $("#about-btn").addEventListener("click", () => openModal("about-modal"));
+            $("#help-btn").addEventListener("click", () => openModal("help-modal"));
+            $$("[data-close]").forEach(b => b.addEventListener("click", closeModals));
+            $$(".backdrop").forEach(b => b.addEventListener("click", (e) => { if (e.target === b) closeModals(); }));
+
+            // blank click deselect
+            svg.addEventListener("click", (e) => { if (e.target === svg) { state.selectedId = null; state.selectedConn = null; applySelectionVisual(); detailPanel.innerHTML = emptyDetail(); } });
+
+            // responsive
+            const onResize = () => { if (window.innerWidth <= 820) renderMobileTree(); else { renderGraph(); } };
+            let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(onResize, 200); });
+
+            // initial render
+            if (window.innerWidth <= 820) { renderMobileTree(); }
+            else { renderGraph(); }
+            updateMasteryBar();
+            detailPanel.innerHTML = emptyDetail();
+        }
+        init();
     })();
     </script>
 </body>

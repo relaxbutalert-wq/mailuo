@@ -128,7 +128,7 @@
         .ai-box { margin-top:16px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
         .ai-head { background:#fafaff; padding:9px 12px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px; border-bottom:1px solid var(--line); }
         .ai-head .ava { width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px; }
-        .ai-msgs { max-height: 220px; overflow-y:auto; padding:10px 12px; display:flex; flex-direction:column; gap:8px; background:#fff; }
+        .ai-msgs { max-height: 264px; overflow-y:auto; padding:10px 12px; display:flex; flex-direction:column; gap:8px; background:#fff; scroll-behavior:smooth; }
         .ai-msg { font-size:13px; line-height:1.6; padding:8px 11px; border-radius:11px; max-width:92%; }
         .ai-msg.bot { background:#f4f4ff; align-self:flex-start; border-bottom-left-radius:3px; }
         .ai-msg.me { background:var(--accent); color:#fff; align-self:flex-end; border-bottom-right-radius:3px; }
@@ -138,6 +138,17 @@
         .ai-quick { display:flex; gap:6px; flex-wrap:wrap; padding:8px 10px; border-top:1px solid var(--line); background:#fafaff; }
         .ai-quick button { font-size:11.5px; border:1px solid var(--line); background:#fff; border-radius:99px; padding:4px 9px; color:var(--muted); }
         .ai-quick button:hover { border-color:var(--accent); color:var(--accent); }
+        .ai-box { background: linear-gradient(180deg,#fbfbff,#f5f4ff); }
+        .ai-ctx { font-size:11.5px; color:var(--muted); padding:6px 12px; background:#efeeff; border-bottom:1px solid var(--line); }
+        .ai-ctx b { color:var(--accent); }
+        .ai-reset { margin-left:auto; border:none; background:transparent; color:var(--muted); font-size:14px; cursor:pointer; line-height:1; padding:2px 5px; border-radius:6px; transition:background .2s, color .2s; }
+        .ai-reset:hover { background:#e6e3ff; color:var(--accent); }
+        .ai-msg { animation: aiIn .22s cubic-bezier(.16,1,.3,1); }
+        @keyframes aiIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+        .ai-typing { display:flex; gap:3px; align-items:center; width:fit-content; }
+        .ai-typing span { width:5px; height:5px; border-radius:50%; background:#b9b6e6; animation: aiBlink 1.1s infinite; }
+        .ai-typing span:nth-child(2){ animation-delay:.18s; } .ai-typing span:nth-child(3){ animation-delay:.36s; }
+        @keyframes aiBlink { 0%,100%{ opacity:.3; transform:translateY(0);} 50%{ opacity:1; transform:translateY(-2px);} }
 
         /* ---------- home overlay ---------- */
         .overlay { position:fixed; inset:0; z-index:60; background: radial-gradient(1200px 600px at 50% -10%, #eef0ff, transparent), var(--bg); display:flex; align-items:center; justify-content:center; padding:24px; }
@@ -2172,6 +2183,7 @@
             const c = rawData.connections[i];
             detailPanel.innerHTML = `<div class="d-section"><h4>知识关系</h4><p style="font-size:14px;line-height:1.7">「${esc(nodeById[c.from].name)}」 ${c.kind === "prereq" ? "<b>是</b> 「" + esc(nodeById[c.to].name) + "」的<b>前置依赖</b>" : "与「" + esc(nodeById[c.to].name) + "」存在<b>横向关联</b>"}。</p></div>` +
                 `<div class="ai-box">${aiBoxHtml(c.to)}</div>`;
+            aiRestore(c.to); bindAiChat(c.to, "#detail-panel");
         }
 
         function ancestorsOf(id) {
@@ -2296,52 +2308,124 @@
             $("#mastery-label").textContent = "掌握 " + pct + "%";
         }
 
-        // ---------- AI chat (demo) ----------
+        // ---------- AI Tutor (context-aware, graph-grounded) ----------
         function aiBoxHtml(id) {
-            return `<div class="ai-head"><span class="ava">🤖</span> 数学助教</div>
-                <div class="ai-msgs" id="ai-msgs-${id}">
-                    <div class="ai-msg bot">你好，我是数学助教 👋 关于「${esc(nodeById[id].name)}」有什么不会的？可以问我，或点下面的快捷问题。</div>
-                </div>
+            const n = nodeById[id];
+            return `<div class="ai-box" data-ai-id="${id}">
+                <div class="ai-head"><span class="ava">🤖</span> 数学助教 <button class="ai-reset" title="清空本节点对话">↺</button></div>
+                <div class="ai-ctx">正在聊：<b>${esc(n.name)}</b> · ${esc(n.grade)} · ${esc(moduleMap[n.module].name)}</div>
+                <div class="ai-msgs" id="ai-msgs-${id}"></div>
                 <div class="ai-quick">
-                    <button data-q="用更简单的话解释">简单解释</button>
-                    <button data-q="给我一个生活化的例子">生活例子</button>
-                    <button data-q="出一道基础题">来道题</button>
-                    <button data-q="它和相近知识点有什么区别">对比相近</button>
+                    <button data-q="简单解释">简单解释</button>
+                    <button data-q="生活例子">生活例子</button>
+                    <button data-q="来道题考我">来道题</button>
+                    <button data-q="对比相近">对比相近</button>
+                    <button data-q="为什么重要">为什么重要</button>
+                    <button data-q="我还是不会">我还是不会</button>
                 </div>
-                <div class="ai-input"><input placeholder="问点什么…" id="ai-input-${id}"><button id="ai-send-${id}">发送</button></div>`;
+                <div class="ai-input"><input placeholder="问点什么，回车发送…" id="ai-input-${id}"><button id="ai-send-${id}">发送</button></div>
+            </div>`;
         }
-        const AI_REPLY = {
-            "用更简单的话解释": (n) => `「${n.name}」说白了就是：${simpleOf(n.id)}`,
-            "给我一个生活化的例子": (n) => `生活例子：${lifeOf(n.id)}`,
-            "出一道基础题": (n) => `来一道题：${metaOf(n.id).typical[0]}（先自己试试，再看前面的典型题解析～）`,
-            "它和相近知识点有什么区别": (n) => `区别：${compareOf(n.id)}`
-        };
-        function simpleOf(id) { const m = { "quadratic-equation": "一个带 x² 的方程，解它能找到使等式成立的 x", "linear-function": "一个量随另一个量均匀变化的关系，画出来是一条直线", "triangle": "三条线段围成的图形，是最基础的平面图形", "circle": "到定点距离相等的所有点组成的封闭曲线", "factorization": "把多项式写成几个整式相乘，相当于整式的『因式分解』", "pythagoras": "直角三角形中，两直角边的平方和等于斜边的平方" }; return m[id] || "它是初中数学里一个需要理解并熟练运用的核心概念。"; }
+        function simpleOf(id) { const m = { "quadratic-equation": "一个带 x² 的方程，解它能找到使等式成立的 x", "linear-function": "一个量随另一个量均匀变化的关系，画出来是一条直线", "triangle": "三条线段围成的图形，是最基础的平面图形", "circle": "到定点距离相等的所有点组成的封闭曲线", "factorization": "把多项式写成几个整式相乘，相当于整式的『因式分解』", "pythagoras": "直角三角形中，两直角边的平方和等于斜边的平方" }; return m[id] || "它是数学里一个需要理解并熟练运用的核心概念。"; }
         function lifeOf(id) { const m = { "quadratic-equation": "投篮抛物线、拱桥形状都和二次函数/方程有关", "linear-function": "打车计费：起步价 + 每公里单价×里程，就是一次函数", "triangle": "三脚架、自行车车架都利用三角形稳定性", "circle": "车轮、井盖做成圆形，因为圆上每点到中心距离相等", "pythagoras": "量一下楼梯的水平和垂直长度，就能算出斜边长" }; return m[id] || "生活中很多现象都能用它来解释。"; }
         function compareOf(id) { const m = { "quadratic-function": "和「一元二次方程」不同：方程是求某个具体的 x，函数是研究 x 变化时 y 怎么变（一条曲线）。", "linear-function": "和「反比例函数」不同：一次函数是直线、均匀变化；反比例是双曲线、越靠近轴变化越快。", "rectangle": "矩形和菱形都是特殊平行四边形：矩形四个角是直角，菱形四条边相等；正方形两者都是。", "triangle": "和「相似图形」不同：三角形是具体图形，相似是图形之间的比例关系。" }; return m[id] || "它和相邻知识点既有联系也有区别，建议结合「横向关联」一起看。"; }
-        function bindAi(id) {
-            const box = $(`#ai-msgs-${id}`); if (!box) return;
-            const send = () => {
-                const inp = $(`#ai-input-${id}`); const q = inp.value.trim(); if (!q) return;
-                box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`);
-                inp.value = "";
-                setTimeout(() => {
-                    let reply;
-                    if (AI_REPLY[q]) reply = AI_REPLY[q](nodeById[id]);
-                    else if (window.CZ_AI_ENDPOINT) { reply = "（已接入真实 API，正在生成…）"; }
-                    else reply = `关于「${nodeById[id].name}」，我的理解是：${simpleOf(id)}。你可以问「生活例子」「来道题」或「对比相近」。`;
-                    box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(reply)}</div>`);
-                    box.scrollTop = box.scrollHeight;
-                }, 350);
-            };
-            $(`#ai-send-${id}`).addEventListener("click", send);
-            $(`#ai-input-${id}`).addEventListener("keydown", e => { if (e.key === "Enter") send(); });
-            $$(`#detail-panel .ai-quick button`).forEach(b => b.addEventListener("click", () => {
-                const q = b.dataset.q; const box2 = $(`#ai-msgs-${id}`);
-                box2.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`);
-                setTimeout(() => { box2.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`); box2.scrollTop = box2.scrollHeight; }, 300);
-            }));
+        function analogyOf(id) { const m = { "quadratic-equation": "把 x 想成一把钥匙，方程就是一把锁，解它就是找到能打开这把锁的钥匙。", "linear-function": "就像自动扶梯，每上一个台阶高度固定增加——对应 k；起点高度对应 b。", "triangle": "三角形像三脚架，为什么稳？因为三条边互相『拉住』。", "circle": "圆像钟表指针尖画出的轨迹，到中心距离永远一样。", "pythagoras": "把它想成铺地砖：两条直角边上的正方形，拼起来正好是斜边上的正方形。", "factorization": "因式分解像把一整块乐高拆成几个小积木，方便重新组合。" }; return m[id] || "把前面的知识点当成『原料』，它负责把原料加工成你想要的『结果』。"; }
+        function structOf(id) { const m = { "quadratic-equation": "标准形式 ax²+bx+c=0，先看 a≠0，再用判别式 Δ=b²−4ac 判断根的情况，最后求根公式。", "linear-function": "抓住两个量：变化率 k（斜率）和起点 b（截距），图像就是一条斜直线。", "quadratic-function": "顶点式 y=a(x−h)²+k：a 定开口与胖瘦，(h,k) 是顶点，对称轴是 x=h。", "triangle": "三边关系（两边之和大于第三边）+ 内角和 180° + 全等/相似的判定。", "circle": "圆心、半径、弦、弧；圆心角=2×圆周角；切线垂直于过切点的半径。" }; return m[id] || "先明确『输入是什么、输出是什么、约束条件有哪些』，结构就清楚了。"; }
+        function examplesOf(id) { const n = nodeById[id], m = metaOf(id); const sub = (m.typical && m.typical.length) ? (`在「${n.name}」里，一个典型运用是：${m.typical[0]}`) : (`做「${n.name}」相关题时，先回归它的定义再下手。`); return [lifeOf(id), sub, analogyOf(id)]; }
+
+        const aiThreads = {};
+        let aiLastNode = null, aiCurrentNode = null;
+        const AI_I = { IMPORTANCE: "importance", EXAMPLE: "example", QUIZ: "quiz", COMPARE: "compare", STUCK: "stuck", REPHRASE: "rephrase", ANSWER: "answer", GENERIC: "generic" };
+        function detectIntent(q) {
+            if (/为什么|重要|意义|为什么学|价值|干嘛/.test(q)) return AI_I.IMPORTANCE;
+            if (/解析|答案|怎么做|对吗|我算|步骤/.test(q)) return AI_I.ANSWER;
+            if (/例子|生活|应用|实际|场景|举例/.test(q)) return AI_I.EXAMPLE;
+            if (/题|考我|练习|测试|出一道|作业|训练/.test(q)) return AI_I.QUIZ;
+            if (/区别|对比|不同|比一比|关系|联系|和.*比|相比/.test(q)) return AI_I.COMPARE;
+            if (/不会|听不懂|不懂|难|没懂|懵|卡住|跟不上/.test(q)) return AI_I.STUCK;
+            if (/再|换|重|另一种|讲一遍|讲清楚|换个说法|简单点|大白话|通俗|解释/.test(q)) return AI_I.REPHRASE;
+            return AI_I.GENERIC;
         }
+        function aiGreeting(id) { const n = nodeById[id]; return `你好，我是数学助教 👋 我们现在看「${n.name}」（${n.grade}·${moduleMap[n.module].name}）。\n对话会记住上下文：可以问「为什么重要」「生活例子」「来道题」，或切换节点后问「它和刚才那个有什么关系」。`; }
+        function ensureThread(id) { if (!aiThreads[id]) aiThreads[id] = { turns: [{ role: "bot", content: aiGreeting(id) }], rephraseCount: 0, exampleCount: 0, lastQuiz: null }; return aiThreads[id]; }
+        function aiContext(id) { const n = nodeById[id], m = metaOf(id); return { id, name: n.name, grade: n.grade, stage: stageOf(n.grade), module: n.module, moduleName: moduleMap[n.module].name, prereqs: prereqParents[id].map(i => nodeById[i].name), related: relatedOf[id].map(i => nodeById[i].name), children: prereqChildren[id].map(i => nodeById[i].name), est: m.est, freq: m.freq, level: m.level, typical: m.typical, exam: (stageOf(n.grade) === "初中" ? m.zhongkao : (m.exam || "")) }; }
+
+        function impReply(id) {
+            const n = nodeById[id], m = metaOf(id), stg = stageOf(n.grade);
+            const kids = prereqChildren[id].map(i => nodeById[i].name), pars = prereqParents[id].map(i => nodeById[i].name);
+            let s = `「${n.name}」为什么重要？\n`;
+            if (kids.length) s += `① 它是 ${kids.length} 个后续知识的前置：比如 ${kids.slice(0, 3).join("、")}${kids.length > 3 ? " 等" : ""}。前面没吃透，后面会越来越吃力。\n`;
+            if (pars.length) s += `② 它本身又建立在 ${pars.slice(0, 2).join("、")} 之上，建议先确认这些已掌握。\n`;
+            s += `③ 考试频率 ${stars(m.freq)}（约 ${Math.round(m.freq / 5 * 100)}% 的卷子会出现），推荐掌握程度「${m.level}」，预计学习 ${m.est} 分钟。`;
+            if (stg === "初中") s += `\n中考视角：${m.zhongkao || "（待补充）"}`;
+            else if (stg === "高中") s += `\n高考视角：这是核心模块，建议配合真题综合训练。`;
+            else s += `\n小学阶段重点是理解概念、熟练运算，为初中打底。`;
+            return s;
+        }
+        function exampleReply(id, thread) { const pool = examplesOf(id); thread.exampleCount = (thread.exampleCount || 0) + 1; return `生活化的例子（第 ${thread.exampleCount} 个）：\n${pool[(thread.exampleCount - 1) % pool.length]}\n\n还想看更多？回「再来一个例子」或「换一个」。`; }
+        function quizReply(id, thread) { const m = metaOf(id); const pool = (m.typical && m.typical.length) ? m.typical : [`围绕「${nodeById[id].name}」出一道基础题：请说明它的核心思路。`]; let pick, guard = 0; do { pick = pool[Math.floor(Math.random() * pool.length)]; guard++; } while (pool.length > 1 && pick === thread.lastQuiz && guard < 8); thread.lastQuiz = pick; return `来一道题考考你 📝：\n${pick}\n\n先自己试试，做完回「解析」我帮你核对；或者回「再出一道」。`; }
+        function answerReply(id, thread) { if (thread.lastQuiz) return `这道题的思路参考：\n针对「${thread.lastQuiz}」，关键是先明确已知与所求，再套用「${nodeById[id].name}」的方法逐步推进。\n你算出的结果是什么？发给我，我帮你判。`; return `做这类题的通用步骤：① 回归「${nodeById[id].name}」的定义；② 标出已知条件；③ 选对方法；④ 验算。\n你做到哪一步了？告诉我，我陪你走完。`; }
+        function stuckReply(id) { const pars = prereqParents[id]; if (pars.length) { const p = nodeById[pars[0]]; return `别急，这很正常 👍 多半是前置还没吃透。\n建议先回到「${p.name}」（${p.grade}）打牢基础，再来「${nodeById[id].name}」会顺很多。\n要我讲「${p.name}」吗？回「讲 ${p.name}」或点左侧节点即可。`; } return `别急，我们拆成小步：\n① 先记住「${nodeById[id].name}」的定义；② 看一道典型题；③ 自己复述一遍。\n需要我从哪一步开始？`; }
+        function rephraseReply(id, thread) { thread.rephraseCount = (thread.rephraseCount || 0) + 1; const styles = [`白话版：「${nodeById[id].name}」说白了就是：${simpleOf(id)}`, `比喻版：可以把「${nodeById[id].name}」想成一条流水线——${analogyOf(id)}`, `结构版：「${nodeById[id].name}」的核心是抓住关键结构：${structOf(id)}`]; return styles[(thread.rephraseCount - 1) % styles.length]; }
+        function genericReply(id) { const n = nodeById[id], m = metaOf(id), pars = prereqParents[id].map(i => nodeById[i].name); return `关于「${n.name}」（${n.grade}·${moduleMap[n.module].name}）：\n它${pars.length ? ("是「" + pars.join("、") + "」的后续") : "是基础概念"}，考试频率 ${stars(m.freq)}。\n你可以问我：为什么重要 / 生活例子 / 来道题 / 和谁对比 / 我还是不会。`; }
+
+        function aiRespond(id, q, thread) {
+            const n = nodeById[id], ql = q.toLowerCase();
+            if ((ql.includes("刚才") || ql.includes("之前") || ql.includes("上个") || ql.includes("那个") || ql.includes("之前那个")) && aiLastNode && aiLastNode !== id) {
+            const a = nodeById[id], b = nodeById[aiLastNode];
+            const linked = relatedOf[id].includes(aiLastNode) || relatedOf[aiLastNode].includes(id);
+            const linkTxt = linked ? "是横向关联，放在一张知识网里对照看会更通透。" : `存在前后置依赖，建议先吃透「${b.name}」再推进「${a.name}」。`;
+            return `我们刚才在看「${b.name}」，现在看「${a.name}」。\n它们的联系：${linkTxt}\n要我把两者的对比讲细一点？回「对比」即可。`;
+            }
+            const intent = detectIntent(q);
+            if (intent === AI_I.IMPORTANCE) return impReply(id);
+            if (intent === AI_I.EXAMPLE) return exampleReply(id, thread);
+            if (intent === AI_I.QUIZ) return quizReply(id, thread);
+            if (intent === AI_I.ANSWER) return answerReply(id, thread);
+            if (intent === AI_I.COMPARE) return `对比「${n.name}」——\n${compareOf(id)}\n\n还想对比别的节点？告诉我名字。`;
+            if (intent === AI_I.STUCK) return stuckReply(id);
+            if (intent === AI_I.REPHRASE) return rephraseReply(id, thread);
+            return genericReply(id);
+        }
+
+        function aiAppend(box, who, text) { const el = document.createElement("div"); el.className = "ai-msg " + (who === "me" ? "me" : "bot"); el.innerHTML = esc(text).replace(/\n/g, "<br>"); box.appendChild(el); box.scrollTop = box.scrollHeight; return el; }
+        function aiTyping(box) { const el = document.createElement("div"); el.className = "ai-msg bot ai-typing"; el.innerHTML = "<span></span><span></span><span></span>"; box.appendChild(el); box.scrollTop = box.scrollHeight; return el; }
+        function threadRender(t) { return t.turns.map(t => `<div class="ai-msg ${t.role === "me" || t.role === "user" ? "me" : "bot"}">${esc(t.content).replace(/\n/g, "<br>")}</div>`).join(""); }
+        function aiUserTurn(id, box, q) { aiAppend(box, "me", q); ensureThread(id).turns.push({ role: "user", content: q }); box.scrollTop = box.scrollHeight; }
+        function aiBotTurn(id, box, q) {
+            const thread = ensureThread(id); const typing = aiTyping(box);
+            const finish = (reply) => { if (typing.parentNode) typing.remove(); aiAppend(box, "bot", reply); thread.turns.push({ role: "bot", content: reply }); box.scrollTop = box.scrollHeight; };
+            if (window.CZ_AI_ENDPOINT) aiApiCall(id, thread, q).then(finish).catch(() => finish(aiRespond(id, q, thread)));
+            else setTimeout(() => finish(aiRespond(id, q, thread)), 480);
+        }
+        async function aiApiCall(id, thread, q) {
+            const ctx = aiContext(id);
+            const sys = `你是「脉络 Mailuo」的数学助教，耐心、鼓励、用中文回答。当前知识点：${ctx.name}（${ctx.grade}·${ctx.moduleName}）。前置：${ctx.prereqs.join("、") || "无"}；关联：${ctx.related.join("、") || "无"}；后续：${ctx.children.join("、") || "无"}。考试频率${ctx.freq}/5，推荐掌握「${ctx.level}」。请基于这些信息，结合对话历史，给出简洁、循序渐进的讲解；多轮要保持连贯，引用前面聊过的内容。`;
+            const messages = [{ role: "system", content: sys }].concat(thread.turns.map(t => ({ role: t.role === "bot" ? "assistant" : "user", content: t.content })), [{ role: "user", content: q }]);
+            const r = await fetch(window.CZ_AI_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages, node: ctx }) });
+            const data = await r.json().catch(() => ({}));
+            return data.reply || data.content || data.text || null;
+        }
+        function aiRestore(id, rootSel = "#detail-panel") {
+            if (aiCurrentNode && aiCurrentNode !== id) aiLastNode = aiCurrentNode;
+            aiCurrentNode = id;
+            const box = $(`${rootSel} #ai-msgs-${id}`) || $(`#ai-msgs-${id}`); if (!box) return;
+            const thread = ensureThread(id);
+            box.innerHTML = threadRender(thread);
+            box.scrollTop = box.scrollHeight;
+        }
+        function bindAiChat(id, rootSel) {
+            const box = $(`${rootSel} #ai-msgs-${id}`) || $(`#ai-msgs-${id}`); if (!box) return;
+            const inp = $(`${rootSel} #ai-input-${id}`) || $(`#ai-input-${id}`);
+            const sendBtn = $(`${rootSel} #ai-send-${id}`) || $(`#ai-send-${id}`);
+            const send = () => { const q = inp.value.trim(); if (!q) return; aiUserTurn(id, box, q); inp.value = ""; aiBotTurn(id, box, q); };
+            if (sendBtn) sendBtn.addEventListener("click", send);
+            if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+            $$(`${rootSel} .ai-quick button`).forEach(b => b.addEventListener("click", () => { aiUserTurn(id, box, b.dataset.q); aiBotTurn(id, box, b.dataset.q); }));
+            const resetBtn = $(`${rootSel} .ai-reset`);
+            if (resetBtn) resetBtn.addEventListener("click", () => { aiThreads[id] = { turns: [{ role: "bot", content: aiGreeting(id) }], rephraseCount: 0, exampleCount: 0, lastQuiz: null }; box.innerHTML = threadRender(aiThreads[id]); box.scrollTop = 0; toast("已清空本节点对话"); });
+        }
+        function bindAi(id) { aiRestore(id, "#detail-panel"); bindAiChat(id, "#detail-panel"); }
 
         // ---------- edit handles ----------
         function bindEditHandles() {
@@ -2511,12 +2595,7 @@
             bindSheetAi(id);
             $("#mt-sheet").classList.add("open");
         }
-        function bindSheetAi(id) {
-            const box = $(`#mt-sheet-body #ai-msgs-${id}`); if (!box) return;
-            const send = () => { const inp = $(`#mt-sheet-body #ai-input-${id}`); const q = inp.value.trim(); if (!q) return; box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`); inp.value = ""; setTimeout(() => { box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`); }, 300); };
-            $(`#mt-sheet-body #ai-send-${id}`).addEventListener("click", send);
-            $(`#mt-sheet-body .ai-quick button`).forEach(b => b.addEventListener("click", () => { const q = b.dataset.q; box.insertAdjacentHTML("beforeend", `<div class="ai-msg me">${esc(q)}</div>`); setTimeout(() => box.insertAdjacentHTML("beforeend", `<div class="ai-msg bot">${esc(AI_REPLY[q] ? AI_REPLY[q](nodeById[id]) : simpleOf(id))}</div>`), 300); }));
-        }
+        function bindSheetAi(id) { aiRestore(id, "#mt-sheet-body"); bindAiChat(id, "#mt-sheet-body"); }
 
         // ---------- misc UI ----------
         const emptyDetail = () => `<div class="detail-empty"><div class="big">🧭</div>点击任意知识节点，查看它的年级、模块、前置学习链、后续关联与推荐路径；右下角圆点可标记掌握状态。</div>`;

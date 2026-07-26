@@ -1,21 +1,23 @@
 #!/usr/bin/env bash
-# 一键部署「初中数学知识路径图」到 GitHub Pages
+# 一键部署「MathPath」到 GitHub Pages
 # 前置：本地已安装并登录 gh（gh auth login），且对目标账号有建仓权限。
 set -e
 
 USER="relaxbutalert-wq"
-REPO="junior-math-knowledge-map"
+REPO="mathpath"
 
 cd "$(dirname "$0")"
 
 # 1) 建公开仓库（已存在则忽略）
-gh repo create "$REPO" --public --description "初中数学知识路径图 · 知识路径可视化工具" 2>/dev/null || \
+gh repo create "$REPO" --public --description "MathPath · 数学知识图谱 AI Learning Graph" 2>/dev/null || \
   echo "（仓库已存在或跳过创建，继续推送）"
+# 注：当前 deploy-github-pages 的 origin 已配置为 https+token 的 mathpath 远程，
+#     如需改用 SSH 推送，请确保已配置 git@github.com 的 SSH key。
 
 # 2) 初始化并提交
 git init -q
 git add -A
-git commit -qm "init: 初中数学知识路径图 (self-contained, zero-dependency)" 2>/dev/null || git commit -qm "update" 
+git commit -qm "init: MathPath (self-contained, zero-dependency)" 2>/dev/null || git commit -qm "update"
 git branch -M main
 
 # 3) 关联远程并推送

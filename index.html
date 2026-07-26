@@ -956,12 +956,12 @@
             return { modules: rawData.modules, nodes: rawData.nodes.map(n => ({ ...n, x: nodeState[n.id].x, y: nodeState[n.id].y, w: nodeState[n.id].w, h: nodeState[n.id].h })), connections: rawData.connections, version: "北师大版", updatedAt: new Date().toISOString().slice(0, 10), mastery: state.mastery };
         }
         function download(name, content, type) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
-        function exportJSON() { download("初中数学知识路径图.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
+        function exportJSON() { download("MathPath.json", JSON.stringify(currentData(), null, 2), "application/json"); toast("已导出 JSON"); }
         function exportSVG() {
             const clone = svg.cloneNode(true);
             clone.setAttribute("xmlns", SVGNS);
             const out = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
-            download("初中数学知识路径图.svg", out, "image/svg+xml"); toast("已导出 SVG");
+            download("MathPath.svg", out, "image/svg+xml"); toast("已导出 SVG");
         }
         async function exportPNG() {
             const xml = new XMLSerializer().serializeToString(svg);
@@ -973,7 +973,7 @@
                 const ctx = cv.getContext("2d");
                 ctx.fillStyle = "#f7f8fb"; ctx.fillRect(0, 0, cv.width, cv.height);
                 ctx.drawImage(img, 0, 0, cv.width, cv.height);
-                cv.toBlob(b => { download("初中数学知识路径图.png", b, "image/png"); toast("已导出 PNG"); });
+                cv.toBlob(b => { download("MathPath.png", b, "image/png"); toast("已导出 PNG"); });
             };
             img.onerror = () => toast("PNG 导出需浏览器渲染，请重试");
             img.src = svg64;
